@@ -1,0 +1,48 @@
+{
+  "scope": "DEX string prefilter only; does not prove reachability or absence of native/reflection calls",
+  "files": 261,
+  "unreadable": [
+    "system/framework/MiuiBooster.jar"
+  ],
+  "matches": [
+    {
+      "file": "system/framework/services.jar",
+      "markers": [
+        "Landroid/os/IVold;",
+        "Landroid/os/IInstalld;",
+        "rebootPromptAndWipeUserData",
+        "sys.powerctl",
+        "setup-bcb",
+        "IGateKeeperService",
+        "AndroidKeyStoreMaintenance"
+      ]
+    },
+    {
+      "file": "system/framework/framework.jar",
+      "markers": [
+        "Landroid/os/IVold;",
+        "Landroid/os/IInstalld;",
+        "rebootPromptAndWipeUserData",
+        "IGateKeeperService",
+        "AndroidKeyStoreMaintenance"
+      ]
+    },
+    {
+      "file": "system/framework/tradeinmode.jar",
+      "markers": [
+        "sys.powerctl"
+      ]
+    },
+    {
+      "file": "system/system_ext/framework/miui-services.jar",
+      "markers": [
+        "Landroid/os/IVold;",
+        "Landroid/os/IInstalld;",
+        "rebootPromptAndWipeUserData",
+        "sys.powerctl",
+        "setup-bcb",
+        "IGateKeeperService"
+      ]
+    }
+  ]
+}

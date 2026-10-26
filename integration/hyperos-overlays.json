@@ -1,0 +1,62 @@
+{
+  "launch_authorized": false,
+  "kind": "integration-specification-only",
+  "files": [
+    {
+      "candidate": "services_patched.jar",
+      "guest_target": "/system/framework/services.jar",
+      "sha256": "fed0a9b9afb640b8381b0e776e4ecc0dc2fa375b37daf3259dd302e3fd58a1de",
+      "phase": "framework",
+      "readonly": true,
+      "guest_apex_versioned_aliases": false
+    },
+    {
+      "candidate": "miui-services_patched.jar",
+      "guest_target": "/system/system_ext/framework/miui-services.jar",
+      "sha256": "ae5794e0f357f17326886cfebbb20f773ed058f168b1b310489bd64a40cb988d",
+      "phase": "framework",
+      "readonly": true,
+      "guest_apex_versioned_aliases": false
+    },
+    {
+      "candidate": "tradeinmode_patched.jar",
+      "guest_target": "/system/framework/tradeinmode.jar",
+      "sha256": "dcb872a25dd6d3957f92a6109be18ef6001498581af97727ddd7f92098aa36bb",
+      "phase": "framework",
+      "readonly": true,
+      "guest_apex_versioned_aliases": false
+    },
+    {
+      "candidate": "vold_patched",
+      "guest_target": "/system/bin/vold",
+      "sha256": "b28497d96967fbd52e1f3236c0d7e36eedb0a28751e7948629965a2e1182c3fd",
+      "phase": "before-vold",
+      "readonly": true,
+      "guest_apex_versioned_aliases": false
+    },
+    {
+      "candidate": "service.incremental_patched.so",
+      "guest_target": "/system/lib64/service.incremental.so",
+      "sha256": "f19a1b57303e97916143e5ca5e9aaf5f30faaee4e64cc3268c63a35d532e7806",
+      "phase": "before-system-server",
+      "readonly": true,
+      "guest_apex_versioned_aliases": false
+    },
+    {
+      "candidate": "service-crashrecovery_patched.jar",
+      "guest_target": "/apex/com.android.crashrecovery/javalib/service-crashrecovery.jar",
+      "sha256": "20d9d291ba02982cea02d1cff278bf406119963e8a5594c6be3140046d9cfbfc",
+      "phase": "after-guest-apex-payload-mount",
+      "readonly": true,
+      "guest_apex_versioned_aliases": true
+    }
+  ],
+  "required_checks": [
+    "All source files match candidate manifest",
+    "All targets belong to the guest mount tree",
+    "Guest APEX payload and every versioned alias use guarded jar",
+    "No later mount shadows the guards",
+    "Host vold registrations survive",
+    "Device boot and return tests pass"
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "build": "AxisGSI HyperOS 4.0.0.6.XOCCNXM 2026-09-14",
+  "launch_ready": false,
+  "methods": [
+    {
+      "file": "services/smali_classes3/com/android/server/pm/UserManagerService.smali",
+      "header": ".method private repairProfileGroupIdIfNecessaryLP()V",
+      "before_sha256": "d2c9705f72898da47837f4437f19a85e8a39e71da19025cecc75c6f134684833",
+      "replacement": ".method private repairProfileGroupIdIfNecessaryLP()V\n    .locals 0\n    # OneOS HyperOS candidate: No XSpace profile repair in a single-user guest.\n    return-void\n.end method",
+      "reason": "No XSpace profile repair in a single-user guest."
+    },
+    {
+      "file": "miui-services/smali/com/android/server/BcbUtil.smali",
+      "header": ".method private static setupOrClearBcb(ZLjava/lang/String;)Z",
+      "before_sha256": "996f57c75b7560bc2bd5734e810becad17b121e9a991294c6251e5716644ff95",
+      "replacement": ".method private static setupOrClearBcb(ZLjava/lang/String;)Z\n    .locals 1\n    # OneOS HyperOS candidate: Never arm or clear the host recovery control block.\n    const/4 v0, 0x0\n    return v0\n.end method",
+      "reason": "Never arm or clear the host recovery control block."
+    },
+    {
+      "file": "miui-services/smali/com/android/server/RescuePartyXM.smali",
+      "header": ".method private static executeFactoryReset(Landroid/content/Context;ILjava/lang/String;)V",
+      "before_sha256": "1d430929a2b340abf5f1e0509d342daf41d51250db8c17f9954aaaed7c40bd2b",
+      "replacement": ".method private static executeFactoryReset(Landroid/content/Context;ILjava/lang/String;)V\n    .locals 0\n    # OneOS HyperOS candidate: Never reset the shared phone from Xiaomi rescue.\n    return-void\n.end method",
+      "reason": "Never reset the shared phone from Xiaomi rescue."
+    },
+    {
+      "file": "miui-services/smali/com/android/server/RescuePartyXM$2.smali",
+      "header": ".method public run()V",
+      "before_sha256": "91876065b09d2b98aa4252c4a8b12055352a37f816add45ab9a6f86f0c376b43",
+      "replacement": ".method public run()V\n    .locals 0\n    # OneOS HyperOS candidate: Never reset the shared phone from Xiaomi rescue worker.\n    return-void\n.end method",
+      "reason": "Never reset the shared phone from Xiaomi rescue worker."
+    },
+    {
+      "file": "miui-services/smali/com/android/server/RescuePartyImpl.smali",
+      "header": ".method public maybeDoResetConfig(Landroid/content/Context;Ljava/lang/String;)Z",
+      "before_sha256": "723d358923eac575f2d2786420f258828f73594809ed5a9fdae3563dc07fd040",
+      "replacement": ".method public maybeDoResetConfig(Landroid/content/Context;Ljava/lang/String;)Z\n    .locals 1\n    # OneOS HyperOS candidate: No Xiaomi config reset or direct powerctl writes.\n    const/4 v0, 0x0\n    return v0\n.end method",
+      "reason": "No Xiaomi config reset or direct powerctl writes."
+    },
+    {
+      "file": "miui-services/smali/com/android/server/SystemServerImpl.smali",
+      "header": ".method private static rebootIntoRecovery()V",
+      "before_sha256": "ff0b6fe371640692cc092d947de20f6c46b7c3cf7428b158ffda5bf08c20802f",
+      "replacement": ".method private static rebootIntoRecovery()V\n    .locals 0\n    # OneOS HyperOS candidate: No recovery reboot for donor version mismatch.\n    return-void\n.end method",
+      "reason": "No recovery reboot for donor version mismatch."
+    },
+    {
+      "file": "miui-services/smali/com/android/server/power/ShutdownThreadImpl.smali",
+      "header": ".method showShutdownAnimOrDialog(Landroid/content/Context;ZLjava/lang/String;)V",
+      "before_sha256": "3255cee614ecf749efeb231f1a5f6659d7599384eaf96e4a29fa5ab4336fc1e1",
+      "replacement": ".method showShutdownAnimOrDialog(Landroid/content/Context;ZLjava/lang/String;)V\n    .locals 0\n    # OneOS HyperOS candidate: Do not start host bootanim during guest shutdown.\n    return-void\n.end method",
+      "reason": "Do not start host bootanim during guest shutdown."
+    },
+    {
+      "file": "miui-services/smali/com/android/server/appcacheopt/AppCacheOptimizer.smali",
+      "header": ".method private connectInstalld()Z",
+      "before_sha256": "8b0f26a76fbcf2c5c0fe0d768e1c711f4491dce7955c744cbc4d12c31bcee60c",
+      "replacement": ".method private connectInstalld()Z\n    .locals 1\n    # OneOS HyperOS candidate: Do not bind Xiaomi cache optimization to Samsung installd.\n    const/4 v0, 0x0\n    return v0\n.end method",
+      "reason": "Do not bind Xiaomi cache optimization to Samsung installd."
+    },
+    {
+      "file": "miui-services/smali/com/android/server/ExtendMImpl.smali",
+      "header": ".method private connect()V",
+      "before_sha256": "a6e11e6324dcf2d19f901d0723929b8710e58fe6d017ac0ee4e90dc9ff9d94bf",
+      "replacement": ".method private connect()V\n    .locals 3\n\n    .line 1157\n    const-string/jumbo v0, \"gvld\"\n\n    invoke-static {v0}, Landroid/os/ServiceManager;->getService(Ljava/lang/String;)Landroid/os/IBinder;\n\n    move-result-object v0\n\n    iput-object v0, p0, Lcom/android/server/ExtendMImpl;->binder:Landroid/os/IBinder;\n\n    .line 1158\n    iget-object v0, p0, Lcom/android/server/ExtendMImpl;->binder:Landroid/os/IBinder;\n\n    if-eqz v0, :cond_0\n\n    iget-object v0, p0, Lcom/android/server/ExtendMImpl;->mVold:Landroid/os/IVold;\n\n    if-nez v0, :cond_0\n\n    .line 1160\n    :try_start_0\n    iget-object v0, p0, Lcom/android/server/ExtendMImpl;->binder:Landroid/os/IBinder;\n\n    iget-object v1, p0, Lcom/android/server/ExtendMImpl;->death:Landroid/os/IBinder$DeathRecipient;\n\n    const/4 v2, 0x0\n\n    invoke-interface {v0, v1, v2}, Landroid/os/IBinder;->linkToDeath(Landroid/os/IBinder$DeathRecipient;I)V\n    :try_end_0\n    .catch Landroid/os/RemoteException; {:try_start_0 .. :try_end_0} :catch_0\n\n    .line 1163\n    goto :goto_0\n\n    .line 1161\n    :catch_0\n    move-exception v0\n\n    .line 1162\n    .local v0, \"e\":Landroid/os/RemoteException;\n    const/4 v1, 0x0\n\n    iput-object v1, p0, Lcom/android/server/ExtendMImpl;->binder:Landroid/os/IBinder;\n\n    .line 1165\n    .end local v0    # \"e\":Landroid/os/RemoteException;\n    :cond_0\n    :goto_0\n    iget-object v0, p0, Lcom/android/server/ExtendMImpl;->binder:Landroid/os/IBinder;\n\n    if-eqz v0, :cond_1\n\n    iget-object v0, p0, Lcom/android/server/ExtendMImpl;->mVold:Landroid/os/IVold;\n\n    if-nez v0, :cond_1\n\n    .line 1166\n    const-string v0, \"ExtM\"\n\n    const-string/jumbo v1, \"init vold\"\n\n    invoke-static {v0, v1}, Landroid/util/Slog;->i(Ljava/lang/String;Ljava/lang/String;)I\n\n    .line 1167\n    iget-object v0, p0, Lcom/android/server/ExtendMImpl;->binder:Landroid/os/IBinder;\n\n    invoke-static {v0}, Landroid/os/IVold$Stub;->asInterface(Landroid/os/IBinder;)Landroid/os/IVold;\n\n    move-result-object v0\n\n    iput-object v0, p0, Lcom/android/server/ExtendMImpl;->mVold:Landroid/os/IVold;\n\n    .line 1169\n    :cond_1\n    return-void\n.end method",
+      "reason": "Use the isolated guest vold name."
+    },
+    {
+      "file": "miui-services/smali/com/android/server/appcacheopt/AppCacheOptimizer.smali",
+      "header": ".method private connectVold()Z",
+      "before_sha256": "55b0222fe94aa8f6535974e6f6599c72f27f17d8ccadbfe30e35153d9ef729c6",
+      "replacement": ".method private connectVold()Z\n    .locals 6\n\n    .line 307\n    iget-object v0, p0, Lcom/android/server/appcacheopt/AppCacheOptimizer;->mVold:Landroid/os/IVold;\n\n    const/4 v1, 0x1\n\n    if-eqz v0, :cond_0\n\n    .line 308\n    return v1\n\n    .line 310\n    :cond_0\n    const-string/jumbo v0, \"gvld\"\n\n    invoke-static {v0}, Landroid/os/ServiceManager;->getService(Ljava/lang/String;)Landroid/os/IBinder;\n\n    move-result-object v0\n\n    .line 311\n    .local v0, \"binder\":Landroid/os/IBinder;\n    const/4 v2, 0x0\n\n    if-eqz v0, :cond_1\n\n    .line 313\n    :try_start_0\n    new-instance v3, Lcom/android/server/appcacheopt/AppCacheOptimizer$$ExternalSyntheticLambda1;\n\n    invoke-direct {v3, p0}, Lcom/android/server/appcacheopt/AppCacheOptimizer$$ExternalSyntheticLambda1;-><init>(Lcom/android/server/appcacheopt/AppCacheOptimizer;)V\n\n    invoke-interface {v0, v3, v2}, Landroid/os/IBinder;->linkToDeath(Landroid/os/IBinder$DeathRecipient;I)V\n    :try_end_0\n    .catch Landroid/os/RemoteException; {:try_start_0 .. :try_end_0} :catch_0\n\n    .line 320\n    goto :goto_0\n\n    .line 318\n    :catch_0\n    move-exception v3\n\n    .line 319\n    .local v3, \"e\":Landroid/os/RemoteException;\n    const/4 v0, 0x0\n\n    .line 323\n    .end local v3    # \"e\":Landroid/os/RemoteException;\n    :cond_1\n    :goto_0\n    const-string v3, \"APPCacheOptimization\"\n\n    if-eqz v0, :cond_2\n\n    .line 324\n    invoke-static {v0}, Landroid/os/IVold$Stub;->asInterface(Landroid/os/IBinder;)Landroid/os/IVold;\n\n    move-result-object v2\n\n    .line 325\n    .local v2, \"vold\":Landroid/os/IVold;\n    iput-object v2, p0, Lcom/android/server/appcacheopt/AppCacheOptimizer;->mVold:Landroid/os/IVold;\n\n    .line 326\n    .end local v2    # \"vold\":Landroid/os/IVold;\n    nop\n\n    .line 332\n    const-string/jumbo v2, \"vold connect success\"\n\n    invoke-static {v3, v2}, Landroid/util/Slog;->i(Ljava/lang/String;Ljava/lang/String;)I\n\n    .line 333\n    invoke-direct {p0}, Lcom/android/server/appcacheopt/AppCacheOptimizer;->init()V\n\n    .line 334\n    return v1\n\n    .line 328\n    :cond_2\n    const-string/jumbo v1, \"vold not found; trying again\"\n\n    invoke-static {v3, v1}, Landroid/util/Slog;->w(Ljava/lang/String;Ljava/lang/String;)I\n\n    .line 329\n    invoke-static {}, Lcom/android/server/MiuiBgThread;->getHandler()Landroid/os/Handler;\n\n    move-result-object v1\n\n    new-instance v3, Lcom/android/server/appcacheopt/AppCacheOptimizer$$ExternalSyntheticLambda2;\n\n    invoke-direct {v3, p0}, Lcom/android/server/appcacheopt/AppCacheOptimizer$$ExternalSyntheticLambda2;-><init>(Lcom/android/server/appcacheopt/AppCacheOptimizer;)V\n\n    const-wide/16 v4, 0x3e8\n\n    invoke-virtual {v1, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z\n\n    .line 330\n    return v2\n.end method",
+      "reason": "Use the isolated guest vold name."
+    },
+    {
+      "file": "crashrecovery/smali/com/android/server/RescueParty.smali",
+      "header": ".method private static isDisabled()Z",
+      "before_sha256": "75c92ef08b7de8de039b8d0067f5e88a707f87c7bed9d2bdcc921a4dfc2c5117",
+      "replacement": ".method private static isDisabled()Z\n    .locals 1\n    # OneOS HyperOS candidate: RescueParty must stay disabled even if shared properties change.\n    const/4 v0, 0x1\n    return v0\n.end method",
+      "reason": "RescueParty must stay disabled even if shared properties change."
+    },
+    {
+      "file": "miui-services/smali/com/android/server/locksettings/SecSyntheticPasswordManager.smali",
+      "header": ".method public destroyLskfBasedProtectorForOldCredential(J)V",
+      "before_sha256": "f8e04724f43108ba15696f227e3db6749f8391fd9461f9aabd6e7a4c516967cf",
+      "replacement": ".method public destroyLskfBasedProtectorForOldCredential(J)V\n    # OneOS HyperOS candidate: Never delete old credentials through the shared OEM HAL.\n    .locals 0\n    return-void\n.end method",
+      "reason": "Never delete old credentials through the shared OEM HAL."
+    },
+    {
+      "file": "miui-services/smali/com/android/server/locksettings/SecSyntheticPasswordManager.smali",
+      "header": ".method public resetOldCredentialTimer()V",
+      "before_sha256": "3d44ce8dbd5d54c0a038481600b7044a2a37f727378a6294ad5fa0853abf1f04",
+      "replacement": ".method public resetOldCredentialTimer()V\n    # OneOS HyperOS candidate: No guest mutation of the old-credential HAL timer.\n    .locals 0\n    return-void\n.end method",
+      "reason": "No guest mutation of the old-credential HAL timer."
+    },
+    {
+      "file": "miui-services/smali/com/android/server/locksettings/SecSyntheticPasswordManager.smali",
+      "header": ".method public setFile(J)Z",
+      "before_sha256": "eb2cf2ef6b36b435ae1f3c950346db2813a7f8e5528344a2a372ac6a5f08bb8d",
+      "replacement": ".method public setFile(J)Z\n    # OneOS HyperOS candidate: Never write credential files through the OEM HAL.\n    .locals 1\n    const/4 v0, 0x0\n    return v0\n.end method",
+      "reason": "Never write credential files through the OEM HAL."
+    },
+    {
+      "file": "tradeinmode/smali/com/android/devicediagnostics/commands/CommandsKt.smali",
+      "header": ".method public static final doMain(Lcom/android/devicediagnostics/commands/Tokenizer;)V",
+      "before_sha256": "d442a417553e0e7420ecc0a529ccd1d66c443763a0ef9b95c4dde2869b3e63f4",
+      "replacement": ".method public static final doMain(Lcom/android/devicediagnostics/commands/Tokenizer;)V\n    # OneOS HyperOS candidate: Trade-in diagnostic reboot commands are unavailable in the guest.\n    .locals 0\n    return-void\n.end method",
+      "reason": "Trade-in diagnostic reboot commands are unavailable in the guest."
+    },
+    {
+      "file": "tradeinmode/smali/com/android/devicediagnostics/commands/CommandsKt.smali",
+      "header": ".method public static final doTesting(Lcom/android/devicediagnostics/commands/Tokenizer;)V",
+      "before_sha256": "32ba5a7cf743d4e011ca99fbc529336ad232e8921209f0421d7e6106cb0d13d9",
+      "replacement": ".method public static final doTesting(Lcom/android/devicediagnostics/commands/Tokenizer;)V\n    # OneOS HyperOS candidate: Trade-in wipe/testing commands are unavailable in the guest.\n    .locals 0\n    return-void\n.end method",
+      "reason": "Trade-in wipe/testing commands are unavailable in the guest."
+    }
+  ]
+}

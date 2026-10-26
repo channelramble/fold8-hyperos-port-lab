@@ -1,0 +1,830 @@
+diff --git a/scripts/check-dex.py b/scripts/check-dex.py
+index 585c160..f70df8b 100644
+--- a/scripts/check-dex.py
++++ b/scripts/check-dex.py
+@@ -13,15 +13,24 @@ Exits 1 and lists the methods if anything is found.
+ """
+ import glob, os, re, subprocess, sys, tempfile, zipfile
+ 
+-dexdump = sorted(glob.glob(os.path.join(os.environ.get("ANDROID_HOME", "/opt/android-sdk"), "build-tools", "*", "dexdump")))[-1]
++tools = sorted(glob.glob(os.path.join(os.environ.get("ANDROID_HOME", "/opt/android-sdk"), "build-tools", "*", "dexdump")))
++if not tools or not sys.argv[1:]:
++    sys.exit("DEX check requires dexdump and at least one input jar")
++dexdump = tools[-1]
+ bad = []
+ for jar in sys.argv[1:]:
+     with tempfile.TemporaryDirectory() as tmp, zipfile.ZipFile(jar) as z:
++        dex_names = [n for n in z.namelist() if re.fullmatch(r"classes\d*\.dex", n)]
++        if not dex_names or len(dex_names) != len(set(dex_names)):
++            sys.exit(f"{jar}: no DEX files or duplicate DEX entries")
+         for name in z.namelist():
+             if not re.match(r"classes\d*\.dex$", name):
+                 continue
+             z.extract(name, tmp)
+-            out = subprocess.run([dexdump, "-d", os.path.join(tmp, name)], capture_output=True).stdout.decode("utf-8", "replace")
++            result = subprocess.run([dexdump, "-d", os.path.join(tmp, name)], capture_output=True)
++            out = result.stdout.decode("utf-8", "replace")
++            if result.returncode or "Class descriptor" not in out:
++                sys.exit(f"{jar}:{name}: dexdump failed or returned no classes; verification did not pass")
+             method = None
+             prev = None
+             for line in out.split("\n"):
+@@ -30,14 +39,14 @@ for jar in sys.argv[1:]:
+                     method = m.group(1)
+                     prev = None
+                     continue
+-                m = re.search(r"\|([0-9a-f]{4}): (\S+)", line)
++                m = re.search(r"\|([0-9a-f]{4,}): (\S+)", line)
+                 if m:
+                     op = m.group(2)
+                     if op.startswith("move-result") and not (prev or "").startswith(("invoke-", "filled-new-array")):
+                         bad.append(f"{os.path.basename(jar)}:{name}: {method} {op} at 0x{m.group(1)} after {prev or 'nothing'}")
+                     prev = op
+                     continue
+-                m = re.match(r"\s+0x([0-9a-f]{4}) - 0x([0-9a-f]{4})\s*$", line)
++                m = re.match(r"\s+0x([0-9a-f]{4,}) - 0x([0-9a-f]{4,})\s*$", line)
+                 if m and m.group(1) == m.group(2):
+                     bad.append(f"{os.path.basename(jar)}:{name}: {method} empty try range 0x{m.group(1)}")
+ for b in bad:
+diff --git a/scripts/make-overlays.sh b/scripts/make-overlays.sh
+index 470824b..5850cc5 100755
+--- a/scripts/make-overlays.sh
++++ b/scripts/make-overlays.sh
+@@ -15,7 +15,7 @@ APKTOOL=${APKTOOL:-$(ls "$ROOT"/mysticgsi/tools/apktool/*.jar 2>/dev/null | head
+ SDK="${ANDROID_HOME:-/opt/android-sdk}"
+ BT=$(ls -d "$SDK"/build-tools/* | sort -V | tail -1)
+ AJ=$(ls "$SDK"/platforms/android-*/android.jar | sort -V | tail -1)
+-DEBUGFS=$(command -v debugfs || echo /usr/sbin/debugfs)
++DEBUGFS=${DEBUGFS:-$(command -v debugfs || echo /usr/sbin/debugfs)}
+ # A file the image has (ColorOS's own jars are not in a Pixel image).
+ in_image() { "$DEBUGFS" -R "stat $1" "$IMG" 2>&1 | grep -q '^Inode:'; }
+ [ -f "$IMG" ] || { echo "usage: $0 <system.img> [outdir]" >&2; exit 2; }
+@@ -55,7 +55,8 @@ OUT=$(cd "$OUT" && pwd)
+ # on (AOSP's isDisabled() in both builds), which guest_start.sh checks. On
+ # ColorOS, OPPO's OplusStorageManagerFeature looks up "vold" too
+ # (oplus-services.jar, guest_own_vold.py --oplus below). Other images are not
+-# patched and their guest vold keeps "vold" (no return without a reboot).
++# accepted: an unknown guest must not register over the host's storage service.
++# A new port needs an audited binary entry before this builder may continue.
+ # "gvld" falls to service_contexts' catch-all default_android_service, which
+ # only a permissive session may add and find.
+ rm -f "$OUT/vold_patched" "$OUT/service.incremental_patched.so"
+@@ -110,8 +111,7 @@ data = {n: read(n) for n in ("vold", "service.incremental.so", "crashrecovery-go
+ build = next((b for b in BUILDS if all(sha(data[n]) == want for n, want in b[1].items())), None)
+ if build is None:
+     have = ", ".join("%s %s" % (n, sha(d)[:12] if d else "missing") for n, d in data.items())
+-    print("vold: not a build this was written against (%s): not patched, the guest vold keeps the name vold" % have)
+-    sys.exit(0)
++    sys.exit("vold: unsupported binary set (%s). Port blocked: audit the guest storage-service binaries before building overlays." % have)
+ for name, off, (old, new) in build[2]:
+     d = data[name]
+     if d[off:off + len(old)] != old:
+diff --git a/scripts/apply-port-method-guards.py b/scripts/apply-port-method-guards.py
+new file mode 100644
+index 0000000..0bbe24e
+--- /dev/null
++++ b/scripts/apply-port-method-guards.py
+@@ -0,0 +1,59 @@
++#!/usr/bin/env python3
++"""Apply reviewed, hash-pinned method replacements to a decoded candidate only.
++
++This does not approve an image for launch. Every method is checked before any
++file is written; an unknown or already-patched method causes a closed failure.
++The original image and framework jars are never opened for writing.
++"""
++import argparse
++import hashlib
++import json
++from pathlib import Path
++import re
++
++
++def prepare(root, spec):
++    pending = {}
++    seen = set()
++    for rule in spec['methods']:
++        rel = Path(rule['file'])
++        path = root / rel
++        if rel.is_absolute() or '..' in rel.parts or path.is_symlink():
++            raise ValueError('unsafe target path')
++        path.resolve().relative_to(root.resolve())
++        ident = (str(rel), rule['header'])
++        if ident in seen:
++            raise ValueError('duplicate method rule')
++        seen.add(ident)
++        text = pending.get(path, path.read_text())
++        pattern = re.compile('^' + re.escape(rule['header']) + r'\n.*?^\.end method$', re.M | re.S)
++        hits = list(pattern.finditer(text))
++        if len(hits) != 1:
++            raise ValueError(f'{rel}: expected exactly one {rule["header"]}')
++        hit = hits[0]
++        if hashlib.sha256(hit.group().encode()).hexdigest() != rule['before_sha256']:
++            raise ValueError(f'{rel}: method differs from reviewed input')
++        replacement = rule['replacement']
++        if not replacement.startswith(rule['header'] + '\n') or not replacement.endswith('\n.end method'):
++            raise ValueError('replacement changes method signature or boundary')
++        pending[path] = text[:hit.start()] + replacement + text[hit.end():]
++    return pending
++
++
++def main():
++    p = argparse.ArgumentParser(description=__doc__)
++    p.add_argument('decoded', type=Path)
++    p.add_argument('spec', type=Path)
++    p.add_argument('--check-only', action='store_true')
++    a = p.parse_args()
++    spec = json.loads(a.spec.read_text())
++    pending = prepare(a.decoded, spec)
++    if not a.check_only:
++        for path, text in pending.items():
++            path.write_text(text)
++    print(json.dumps({'methods_checked': len(spec['methods']), 'files': len(pending),
++                      'applied': not a.check_only, 'launch_ready': False}))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/scripts/audit-port-smali.py b/scripts/audit-port-smali.py
+new file mode 100644
+index 0000000..303534e
+--- /dev/null
++++ b/scripts/audit-port-smali.py
+@@ -0,0 +1,78 @@
++#!/usr/bin/env python3
++"""Inventory sensitive calls in ALL decoded guest jars, including OEM jars.
++
++Read-only review aid: absence of findings is not a proof of guest isolation.
++Native code, reflection and raw Binder transactions need separate review.
++Exit 1 means call sites require review; exit 2 means no smali was inspected.
++"""
++import argparse
++import json
++from pathlib import Path
++import re
++
++CALL = re.compile(r'^\s*invoke-[\w/-]+\s+\{[^}]*\},\s+(L[^;]+;)->([^\s(]+)\(')
++METHODS = {
++    'Landroid/os/IVold;': {'destroyUserStorage', 'prepareUserStorage', 'format',
++        'partition', 'forgetPartition', 'moveStorage', 'onUserRemoved',
++        'startCheckpoint', 'abortChanges', 'shutdown', 'sdlockErase'},
++    'Landroid/os/IInstalld;': {'destroyUserData', 'destroyAppData', 'clearAppData',
++        'clearAppDataWithPreservedCacheEntries', 'destroyAppDataSnapshot',
++        'destroyCeSnapshotsNotSpecified', 'destroyPccData', 'rmPackageDir',
++        'cleanupInvalidPackageDirs', 'moveCompleteApp', 'moveAppDataPath',
++        'copyAppDataPath', 'migrateAppData', 'restoreAppDataSnapshot',
++        'onPrivateVolumeRemoved', 'freeCache', 'reconcileSdkData'},
++    'Landroid/security/AndroidKeyStoreMaintenance;': {'clearNamespace',
++        'onUserRemoved', 'onUserLskfRemoved', 'onUserAdded',
++        'migrateKeyNamespace', 'initUserSuperKeys', 'deleteAllKeys'},
++    'Landroid/service/gatekeeper/IGateKeeperService;': {'enroll',
++        'clearSecureUserId', 'reportDeviceSetupComplete'},
++    'Landroid/hardware/weaver/IWeaver;': {'write'},
++    'Lvendor/xiaomi/hardware/oldcredential/IOldCredentialService;':
++        {'deleteOldCredential', 'setFile', 'resetOldCredentialTimer'},
++}
++CONTROL = re.compile(r'^\s*const-string(?:/jumbo)? [vp]\d+, "(sys\.powerctl|ctl\.start|setup-bcb|clear-bcb)"')
++
++
++def sensitive(owner, method):
++    if method in METHODS.get(owner, set()):
++        return True
++    if owner.startswith('Landroid/hardware/weaver/') and method == 'write':
++        return True
++    if owner == 'Landroid/os/RecoverySystem;' and ('Wipe' in method or 'wipe' in method):
++        return True
++    return False
++
++
++def scan(root):
++    findings, controls, count = [], [], 0
++    for path in sorted(root.rglob('*.smali')):
++        if path.is_symlink():
++            raise ValueError(f'Refusing symlink: {path}')
++        count += 1
++        current_method = None
++        for number, line in enumerate(path.read_text().splitlines(), 1):
++            if line.startswith('.method '):
++                current_method = line
++            elif line.startswith('.end method'):
++                current_method = None
++            match = CALL.match(line)
++            if match and sensitive(*match.groups()):
++                findings.append({'file': str(path.relative_to(root)), 'line': number,
++                    'method': current_method, 'target': '->'.join(match.groups()),
++                    'instruction': line.strip()})
++            control = CONTROL.match(line)
++            if control:
++                controls.append({'file': str(path.relative_to(root)), 'line': number,
++                    'method': current_method, 'string': control.group(1)})
++    return {'files_scanned': count, 'review_required': findings,
++            'control_strings_review_required': controls,
++            'scope': 'Direct invokes and control-string sites; reachability, native code and reflection are not proven. Not a launch authorization.'}
++
++
++if __name__ == '__main__':
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('decoded', type=Path)
++    args = parser.parse_args()
++    report = scan(args.decoded)
++    print(json.dumps(report, indent=2))
++    raise SystemExit(2 if not report['files_scanned'] else bool(report['review_required'] or report['control_strings_review_required']))
+diff --git a/scripts/build-hyperos-candidate.py b/scripts/build-hyperos-candidate.py
+new file mode 100644
+index 0000000..7a7a58c
+--- /dev/null
++++ b/scripts/build-hyperos-candidate.py
+@@ -0,0 +1,109 @@
++#!/usr/bin/env python3
++"""Reproduce offline HyperOS framework candidates. No staging or device access.
++
++Requires extracted inputs from inspect-port-image.py, service-crashrecovery.jar
++extracted from the pinned CAPEX payload, apktool 3.0.3, and Android dexdump.
++Outputs are NOT a flashable ROM or a launch-approved OneOS package.
++"""
++import argparse
++import hashlib
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++
++INPUTS = {
++    'services': ('system/framework/services.jar', 'c7e5901633e6dc7e21eb2b0058494e0fe584d7d0942ea00daeda299281e9ae38'),
++    'miui-services': ('system/system_ext/framework/miui-services.jar', '835056db4962a274c3567b1a329b166b47ed6ab5fd1c408b04e7b1cb5332e8b9'),
++    'tradeinmode': ('system/framework/tradeinmode.jar', '6ebb258ed22de9ad27f57470b351f85470bd0ae45d17369679c8119b7db023b2'),
++}
++COMMON = ['guest_no_vold_keys', 'skip_host_apex_services', 'guest_power_guards',
++          'guest_storage_guards', 'guest_installd_abi', 'guest_no_sysrq_crash',
++          'guest_no_weaver', 'guest_no_biometric_cleanup', 'guest_no_gatekeeper',
++          'guest_pdb_readonly', 'guest_no_apex_installs', 'guest_app_id_offset']
++CRASH_JAR_SHA256 = '4533611de83fa462db64b2bacab2c0e497535f4acd96c0ba4444db0e44b1f193'
++
++
++def sha(path):
++    with path.open('rb') as f:
++        return hashlib.file_digest(f, 'sha256').hexdigest()
++
++
++def main():
++    p = argparse.ArgumentParser(description=__doc__)
++    p.add_argument('--extracted', required=True, type=Path)
++    p.add_argument('--crash-jar', required=True, type=Path)
++    p.add_argument('--host-installd', required=True, type=Path)
++    p.add_argument('--output', required=True, type=Path)
++    a = p.parse_args()
++    if a.output.exists():
++        p.error('Use a new output directory')
++    if not os.environ.get('ANDROID_HOME'):
++        p.error('ANDROID_HOME is required for DEX checks')
++    repo = Path(__file__).resolve().parents[1]
++    patches = repo / 'switcher/patches'
++    scripts = repo / 'scripts'
++    for _, (rel, digest) in INPUTS.items():
++        if sha(a.extracted / rel) != digest:
++            p.error('Unsupported input: ' + rel)
++    if sha(a.crash_jar) != CRASH_JAR_SHA256:
++        p.error('Crash recovery input differs from the reviewed digest')
++    def table(path):
++        return [l for l in path.read_text().splitlines() if l and not l.startswith('#')]
++    if table(a.host_installd) != table(patches / 'host_installd.txt'):
++        p.error('Host installd layout differs; audit before building')
++    a.output.mkdir(parents=True)
++    decoded = a.output / 'decoded'
++    products = a.output / 'candidate'
++    products.mkdir()
++    log = (a.output / 'build.log').open('w')
++    def run(*args):
++        args = [str(v) for v in args]
++        log.write(json.dumps(args) + '\n'); log.flush()
++        subprocess.run(args, check=True, stdout=log, stderr=subprocess.STDOUT)
++    def patch(name, *args):
++        run(sys.executable, '-I', patches / (name + '.py'), decoded / 'services', *args)
++    for name, (rel, _) in INPUTS.items():
++        run('apktool', 'd', '-f', '-r', a.extracted / rel, '-o', decoded / name)
++    run('apktool', 'd', '-f', '-r', a.crash_jar, '-o', decoded / 'crashrecovery')
++    for name in COMMON:
++        patch(name, *([a.host_installd] if name == 'guest_installd_abi' else []))
++    run(sys.executable, scripts / 'apply-port-method-guards.py', decoded,
++        patches / 'hyperos-17-method-guards.json')
++    for name in ['guest_no_new_users', 'guest_own_idmap', 'guest_own_vold']:
++        patch(name)
++    display = list((decoded / 'services').glob('smali*/com/android/server/display/LocalDisplayAdapter.smali'))
++    if len(display) != 1:
++        raise ValueError('Ambiguous display adapter')
++    run(sys.executable, '-I', patches / 'display_mode_specs.py', display[0])
++    jars = []
++    for name, dest in [('services', 'services_patched.jar'),
++                       ('miui-services', 'miui-services_patched.jar'),
++                       ('tradeinmode', 'tradeinmode_patched.jar'),
++                       ('crashrecovery', 'service-crashrecovery_patched.jar')]:
++        out = products / dest
++        run('apktool', 'b', decoded / name, '-o', out)
++        jars.append(out)
++    run(sys.executable, scripts / 'hyperos-native-candidate.py', a.extracted, products)
++    run(sys.executable, scripts / 'check-dex.py', *jars)
++    with (a.output / 'remaining-direct-calls.json').open('w') as f:
++        result = subprocess.run([sys.executable, str(scripts / 'audit-port-smali.py'), str(decoded)], stdout=f)
++        if result.returncode not in (0, 1):
++            raise RuntimeError('Review scanner failed')
++    report = {'launch_ready': False, 'flashable': False, 'device_modified': False,
++              'stage': 'offline structural validation only',
++              'inputs': {rel: digest for rel, digest in INPUTS.values()},
++              'crash_jar_sha256': sha(a.crash_jar),
++              'host_table_sha256': sha(a.host_installd),
++              'files': {f.name: sha(f) for f in products.iterdir() if f.is_file()},
++              'remaining': ['HyperOS runtime/mount and OneOS packaging integration',
++                            'Full native, reflection, Binder and OEM service reachability review',
++                            'Privileged IMS signing/integration and carrier provisioning',
++                            'Device boot, return-to-One-UI and call tests']}
++    (a.output / 'candidate-status.json').write_text(json.dumps(report, indent=2) + '\n')
++    print(json.dumps({'structural_build': 'passed', 'launch_ready': False}))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/scripts/hyperos-native-candidate.py b/scripts/hyperos-native-candidate.py
+new file mode 100644
+index 0000000..9e569bd
+--- /dev/null
++++ b/scripts/hyperos-native-candidate.py
+@@ -0,0 +1,62 @@
++#!/usr/bin/env python3
++"""Build offline HyperOS storage-service patches; never authorize deployment.
++
++Reviewed using this image's .gnu_debugdata and AArch64 disassembly. Each ELF
++LOAD segment containing a patch has matching file offsets and virtual addresses.
++vold start() uses the string at 0xf45d; try_start()'s 0x6ce00 TBZ targets
++the not-declared return at 0x6ced4. IncrementalService's two String16 lookups
++reference 0x64786 (0xc005c ADR and 0xc2710/14 ADRP+ADD).
++"""
++import argparse
++import hashlib
++import json
++from pathlib import Path
++
++FILES = {
++    'system/bin/vold': ('vold_patched', 'f93d8d75894dacf39842fd349c7c271f18794dec0a3a450d56b39464b89273e4',
++                        [(0xf45c, b'\0vold\0', b'\0gvld\0'),
++                         (0x6ce00, bytes.fromhex('b3060036'), bytes.fromhex('35000014'))]),
++    'system/lib64/service.incremental.so': ('service.incremental_patched.so',
++        '2a8a3ff60d47b438acef3338d2f28ea13cc54cce1cad5d8bd55aa68f4adb7caa',
++        [(0x64785, b'\0vold\0', b'\0gvld\0')]),
++}
++
++
++def patch(data, expected_hash, changes):
++    if hashlib.sha256(data).hexdigest() != expected_hash:
++        raise ValueError('unknown binary: no patch written')
++    out = bytearray(data)
++    occupied = set()
++    for offset, before, after in changes:
++        if len(before) != len(after) or out[offset:offset + len(before)] != before:
++            raise ValueError('unexpected patch bytes or length')
++        locations = set(range(offset, offset + len(before)))
++        if locations & occupied:
++            raise ValueError('overlapping patches')
++        occupied |= locations
++        out[offset:offset + len(before)] = after
++    return bytes(out)
++
++
++def main():
++    p = argparse.ArgumentParser(description=__doc__)
++    p.add_argument('extracted', type=Path)
++    p.add_argument('output', type=Path)
++    a = p.parse_args()
++    result = {}
++    for src, (name, sha, changes) in FILES.items():
++        result[name] = patch((a.extracted / src).read_bytes(), sha, changes)
++    a.output.mkdir(parents=True, exist_ok=True)
++    if any((a.output / name).exists() for name in result):
++        raise ValueError('refusing to overwrite candidate binaries')
++    for name, data in result.items():
++        (a.output / name).write_bytes(data)
++    (a.output / 'native-candidate.json').write_text(json.dumps({
++        'launch_ready': False,
++        'reason': 'Requires framework, OEM, APEX, mount and runtime integration review.',
++        'sha256': {n: hashlib.sha256(d).hexdigest() for n, d in result.items()},
++    }, indent=2) + '\n')
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/scripts/inspect-port-image.py b/scripts/inspect-port-image.py
+new file mode 100644
+index 0000000..bfe0493
+--- /dev/null
++++ b/scripts/inspect-port-image.py
+@@ -0,0 +1,79 @@
++#!/usr/bin/env python3
++"""Read-only ext4 guest inventory and extraction for a new OneOS port.
++
++Does not mount, patch, execute, or deploy anything from the guest image.
++The destination must be new. debugfs is never invoked with its write flag.
++"""
++import argparse
++import hashlib
++import json
++from pathlib import Path
++import re
++import subprocess
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('image', type=Path)
++    parser.add_argument('output', type=Path)
++    parser.add_argument('--debugfs', required=True)
++    args = parser.parse_args()
++    image = args.image.resolve()
++    with image.open('rb') as f:
++        f.seek(1080)
++        if f.read(2) != bytes.fromhex('53ef'):
++            parser.error('Expected an unpacked ext4 image, not sparse/EROFS/compressed input')
++    out = args.output.resolve()
++    out.mkdir(parents=True, exist_ok=False)
++    if any(c in str(out) for c in '\n\r"\\'):
++        parser.error('Output path contains unsupported debugfs quoting characters')
++    report = {'image': str(image), 'bytes': image.stat().st_size,
++              'artifacts': [], 'directories': {}, 'launch_ready': False}
++
++    def run(command):
++        p = subprocess.run([args.debugfs, '-R', command, str(image)],
++                           capture_output=True, text=True, timeout=90)
++        return p.stdout
++
++    def dump(source):
++        dest = out / source.lstrip('/')
++        dest.parent.mkdir(parents=True, exist_ok=True)
++        run(f'dump {source} "{dest}"')
++        if not dest.is_file() or dest.stat().st_size == 0:
++            return
++        with dest.open('rb') as f:
++            digest = hashlib.file_digest(f, 'sha256').hexdigest()
++        report['artifacts'].append({'source': source, 'file': str(dest.relative_to(out)),
++                                    'bytes': dest.stat().st_size, 'sha256': digest})
++
++    for source in ['/system/build.prop', '/build.prop',
++                   '/system/system_ext/build.prop', '/system/product/build.prop',
++                   '/system/system_ext/etc/build.prop', '/system/product/etc/build.prop',
++                   '/system/bin/vold', '/system/bin/surfaceflinger',
++                   '/system/lib64/service.incremental.so',
++                   '/system/framework/framework-res.apk']:
++        dump(source)
++    for directory in ['/system/framework', '/system/system_ext/framework',
++                      '/system/product/framework', '/system/apex',
++                      '/system/system_ext/apex', '/system/product/apex']:
++        listing = run(f'ls -p {directory}')
++        names = []
++        for line in listing.splitlines():
++            fields = line.split('/')
++            if len(fields) > 5 and re.fullmatch(r'[A-Za-z0-9_.+-]+', fields[5]):
++                name = fields[5]
++                if name not in ('.', '..'):
++                    names.append(name)
++        report['directories'][directory] = names
++        for name in names:
++            if name.endswith('.jar') or ('crashrecovery' in name and name.endswith(('.apex', '.capex'))):
++                dump(directory + '/' + name)
++    if not any(a['source'] == '/system/framework/services.jar' for a in report['artifacts']):
++        report['blocker'] = 'No /system/framework/services.jar; layout requires manual inspection'
++    (out / 'inventory.json').write_text(json.dumps(report, indent=2) + '\n')
++    print(json.dumps({'artifacts': len(report['artifacts']), 'report': str(out / 'inventory.json'),
++                      'launch_ready': False}, indent=2))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/scripts/test_dex_check.py b/scripts/test_dex_check.py
+new file mode 100644
+index 0000000..4294d35
+--- /dev/null
++++ b/scripts/test_dex_check.py
+@@ -0,0 +1,42 @@
++"""The DEX verifier must not report success when its parser/tool did no work."""
++from pathlib import Path
++import os
++import subprocess
++import tempfile
++import unittest
++import zipfile
++
++
++class DexChecks(unittest.TestCase):
++    def run_check(self, dump, exit_code=0, empty=False):
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp)
++            tool = root / 'build-tools/37/dexdump'
++            tool.parent.mkdir(parents=True)
++            tool.write_text('#!/usr/bin/env python3\nimport sys\nprint(' + repr(dump) + ')\nsys.exit(' + str(exit_code) + ')\n')
++            tool.chmod(0o755)
++            jar = root / 'test.jar'
++            with zipfile.ZipFile(jar, 'w') as z:
++                z.writestr('note.txt' if empty else 'classes.dex', b'fixture')
++            return subprocess.run(['python3', str(Path(__file__).with_name('check-dex.py')), str(jar)],
++                                  env=dict(os.environ, ANDROID_HOME=str(root)), capture_output=True, text=True)
++
++    def test_failed_tool_cannot_pass(self):
++        self.assertNotEqual(self.run_check('Class descriptor', 1).returncode, 0)
++
++    def test_empty_parser_output_cannot_pass(self):
++        self.assertNotEqual(self.run_check('').returncode, 0)
++        self.assertNotEqual(self.run_check('Class descriptor', empty=True).returncode, 0)
++
++    def test_long_addresses_checked(self):
++        r = self.run_check("Class descriptor : 'LExample;'\n|[0000] Example.f:()V\n|10000: nop\n|10001: move-result v0")
++        self.assertNotEqual(r.returncode, 0)
++        self.assertIn('move-result', r.stdout)
++
++    def test_valid_result_sequence(self):
++        r = self.run_check("Class descriptor : 'LExample;'\n|[0000] Example.f:()V\n|0000: invoke-static\n|0003: move-result v0\n|0004: return-void")
++        self.assertEqual(r.returncode, 0, r.stderr)
++
++
++if __name__ == '__main__':
++    unittest.main()
+diff --git a/scripts/test_hyperos_candidates.py b/scripts/test_hyperos_candidates.py
+new file mode 100644
+index 0000000..113154e
+--- /dev/null
++++ b/scripts/test_hyperos_candidates.py
+@@ -0,0 +1,54 @@
++import hashlib
++import importlib.util
++from pathlib import Path
++import tempfile
++import unittest
++
++
++def load(name):
++    spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(name + '.py'))
++    mod = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(mod)
++    return mod
++
++
++native = load('hyperos-native-candidate')
++methods = load('apply-port-method-guards')
++
++
++class CandidateTests(unittest.TestCase):
++    def test_native_preserves_all_unpatched_bytes(self):
++        data = b'abc\0vold\0tail'
++        out = native.patch(data, hashlib.sha256(data).hexdigest(), [(3, b'\0vold\0', b'\0gvld\0')])
++        self.assertEqual(out, b'abc\0gvld\0tail')
++        with self.assertRaises(ValueError):
++            native.patch(data + b'?', hashlib.sha256(data).hexdigest(), [])
++        with self.assertRaises(ValueError):
++            native.patch(data, hashlib.sha256(data).hexdigest(), [(0, b'WRONG', b'STUFF')])
++
++    def test_invalid_second_method_leaves_all_files_untouched(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp)
++            old = '.method public f()V\n    .locals 0\n    return-void\n.end method'
++            (root / 'a.smali').write_text(old)
++            (root / 'b.smali').write_text(old)
++            rules = [dict(file=f, header='.method public f()V', before_sha256=sha,
++                          replacement=old.replace('.locals 0', '.locals 1'))
++                     for f, sha in [('a.smali', hashlib.sha256(old.encode()).hexdigest()), ('b.smali', 'bad')]]
++            with self.assertRaises(ValueError):
++                methods.prepare(root, {'methods': rules})
++            self.assertEqual((root / 'a.smali').read_text(), old)
++            self.assertEqual((root / 'b.smali').read_text(), old)
++            rules[1]['before_sha256'] = rules[0]['before_sha256']
++            prepared = methods.prepare(root, {'methods': rules})
++            self.assertEqual(len(prepared), 2)
++            self.assertIn('.locals 1', prepared[root / 'a.smali'])
++
++    def test_method_path_escape_rejected(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            with self.assertRaises(ValueError):
++                methods.prepare(Path(tmp), {'methods': [{'file': '../outside'}]})
++
++
++if __name__ == '__main__':
++    unittest.main()
+diff --git a/scripts/test_port_build_guard.py b/scripts/test_port_build_guard.py
+new file mode 100644
+index 0000000..beda889
+--- /dev/null
++++ b/scripts/test_port_build_guard.py
+@@ -0,0 +1,37 @@
++"""Regression: unsupported storage binaries must stop before framework patching."""
++import os
++from pathlib import Path
++import subprocess
++import tempfile
++import unittest
++
++
++class PortBuildGuard(unittest.TestCase):
++    def test_unknown_vold_stops_before_framework_and_guards(self):
++        builder = Path(__file__).with_name("make-overlays.sh").resolve()
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp)
++            sdk = root / "sdk"
++            (sdk / "build-tools/36.0.0").mkdir(parents=True)
++            (sdk / "platforms/android-37.0").mkdir(parents=True)
++            (sdk / "platforms/android-37.0/android.jar").touch()
++            image = root / "unknown.img"
++            image.write_bytes(b"unrecognized guest")
++            log = root / "debugfs.log"
++            debugfs = root / "debugfs"
++            debugfs.write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$PORT_TEST_LOG"\nexit 0\n')
++            debugfs.chmod(0o755)
++            output = root / "overlays"
++            env = dict(os.environ, ANDROID_HOME=str(sdk), DEBUGFS=str(debugfs),
++                       APKTOOL=str(root / "unused.jar"), PORT_TEST_LOG=str(log))
++            result = subprocess.run(["sh", str(builder), str(image), str(output)],
++                                    env=env, capture_output=True, text=True, timeout=30)
++            self.assertNotEqual(result.returncode, 0)
++            self.assertIn("Port blocked", result.stderr)
++            self.assertNotIn("/system/framework/services.jar", log.read_text())
++            self.assertFalse((output / "guards.txt").exists())
++            self.assertFalse((output / "vold_patched").exists())
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/scripts/test_port_smali_audit.py b/scripts/test_port_smali_audit.py
+new file mode 100644
+index 0000000..883bbab
+--- /dev/null
++++ b/scripts/test_port_smali_audit.py
+@@ -0,0 +1,51 @@
++import importlib.util
++from pathlib import Path
++import tempfile
++import unittest
++
++spec = importlib.util.spec_from_file_location('audit', Path(__file__).with_name('audit-port-smali.py'))
++audit = importlib.util.module_from_spec(spec)
++spec.loader.exec_module(audit)
++
++
++class AuditTests(unittest.TestCase):
++    def test_oem_jar_is_scanned_and_comments_are_ignored(self):
++        with tempfile.TemporaryDirectory() as d:
++            root = Path(d)
++            p = root / 'miui-services/smali/com/miui/Storage.smali'
++            p.parent.mkdir(parents=True)
++            p.write_text(''' .class public Lcom/miui/Storage;
++.method public wipe()V
++    invoke-interface/range {v0 .. v3}, Landroid/os/IInstalld;->destroyUserData(Ljava/lang/String;II)V
++    # invoke-interface {v0}, Landroid/os/IVold;->format()V
++    const-string v0, "Landroid/os/IVold;->format()V"
++    invoke-interface {v0}, Landroid/os/IVold;->getUnlockedUsers()[I
++.end method
++''')
++            report = audit.scan(root)
++            self.assertEqual(report['files_scanned'], 1)
++            self.assertEqual(len(report['review_required']), 1)
++            self.assertEqual(report['review_required'][0]['method'], '.method public wipe()V')
++            self.assertEqual(report['review_required'][0]['line'], 3)
++
++    def test_lock_and_wipe_paths(self):
++        self.assertTrue(audit.sensitive('Landroid/hardware/weaver/V1_0/IWeaver;', 'write'))
++        self.assertTrue(audit.sensitive('Landroid/os/RecoverySystem;', 'rebootWipeUserData'))
++        self.assertFalse(audit.sensitive('Landroid/service/gatekeeper/IGateKeeperService;', 'verifyChallenge'))
++        self.assertTrue(audit.sensitive('Landroid/os/IVold;', 'abortChanges'))
++        self.assertTrue(audit.sensitive('Lvendor/xiaomi/hardware/oldcredential/IOldCredentialService;', 'setFile'))
++
++    def test_control_property_sites_are_not_silent(self):
++        with tempfile.TemporaryDirectory() as d:
++            p = Path(d) / 'TradeIn.smali'
++            p.write_text('.method public reboot()V\n    const-string v0, "sys.powerctl"\n.end method\n')
++            report = audit.scan(Path(d))
++            self.assertEqual(report['control_strings_review_required'][0]['string'], 'sys.powerctl')
++
++    def test_empty_input_does_not_claim_reviewed(self):
++        with tempfile.TemporaryDirectory() as d:
++            self.assertEqual(audit.scan(Path(d))['files_scanned'], 0)
++
++
++if __name__ == '__main__':
++    unittest.main()
+diff --git a/switcher/patches/hyperos-17-method-guards.json b/switcher/patches/hyperos-17-method-guards.json
+new file mode 100644
+index 0000000..33d13f7
+--- /dev/null
++++ b/switcher/patches/hyperos-17-method-guards.json
+@@ -0,0 +1,118 @@
++{
++  "build": "AxisGSI HyperOS 4.0.0.6.XOCCNXM 2026-09-14",
++  "launch_ready": false,
++  "methods": [
++    {
++      "file": "services/smali_classes3/com/android/server/pm/UserManagerService.smali",
++      "header": ".method private repairProfileGroupIdIfNecessaryLP()V",
++      "before_sha256": "d2c9705f72898da47837f4437f19a85e8a39e71da19025cecc75c6f134684833",
++      "replacement": ".method private repairProfileGroupIdIfNecessaryLP()V\n    .locals 0\n    # OneOS HyperOS candidate: No XSpace profile repair in a single-user guest.\n    return-void\n.end method",
++      "reason": "No XSpace profile repair in a single-user guest."
++    },
++    {
++      "file": "miui-services/smali/com/android/server/BcbUtil.smali",
++      "header": ".method private static setupOrClearBcb(ZLjava/lang/String;)Z",
++      "before_sha256": "996f57c75b7560bc2bd5734e810becad17b121e9a991294c6251e5716644ff95",
++      "replacement": ".method private static setupOrClearBcb(ZLjava/lang/String;)Z\n    .locals 1\n    # OneOS HyperOS candidate: Never arm or clear the host recovery control block.\n    const/4 v0, 0x0\n    return v0\n.end method",
++      "reason": "Never arm or clear the host recovery control block."
++    },
++    {
++      "file": "miui-services/smali/com/android/server/RescuePartyXM.smali",
++      "header": ".method private static executeFactoryReset(Landroid/content/Context;ILjava/lang/String;)V",
++      "before_sha256": "1d430929a2b340abf5f1e0509d342daf41d51250db8c17f9954aaaed7c40bd2b",
++      "replacement": ".method private static executeFactoryReset(Landroid/content/Context;ILjava/lang/String;)V\n    .locals 0\n    # OneOS HyperOS candidate: Never reset the shared phone from Xiaomi rescue.\n    return-void\n.end method",
++      "reason": "Never reset the shared phone from Xiaomi rescue."
++    },
++    {
++      "file": "miui-services/smali/com/android/server/RescuePartyXM$2.smali",
++      "header": ".method public run()V",
++      "before_sha256": "91876065b09d2b98aa4252c4a8b12055352a37f816add45ab9a6f86f0c376b43",
++      "replacement": ".method public run()V\n    .locals 0\n    # OneOS HyperOS candidate: Never reset the shared phone from Xiaomi rescue worker.\n    return-void\n.end method",
++      "reason": "Never reset the shared phone from Xiaomi rescue worker."
++    },
++    {
++      "file": "miui-services/smali/com/android/server/RescuePartyImpl.smali",
++      "header": ".method public maybeDoResetConfig(Landroid/content/Context;Ljava/lang/String;)Z",
++      "before_sha256": "723d358923eac575f2d2786420f258828f73594809ed5a9fdae3563dc07fd040",
++      "replacement": ".method public maybeDoResetConfig(Landroid/content/Context;Ljava/lang/String;)Z\n    .locals 1\n    # OneOS HyperOS candidate: No Xiaomi config reset or direct powerctl writes.\n    const/4 v0, 0x0\n    return v0\n.end method",
++      "reason": "No Xiaomi config reset or direct powerctl writes."
++    },
++    {
++      "file": "miui-services/smali/com/android/server/SystemServerImpl.smali",
++      "header": ".method private static rebootIntoRecovery()V",
++      "before_sha256": "ff0b6fe371640692cc092d947de20f6c46b7c3cf7428b158ffda5bf08c20802f",
++      "replacement": ".method private static rebootIntoRecovery()V\n    .locals 0\n    # OneOS HyperOS candidate: No recovery reboot for donor version mismatch.\n    return-void\n.end method",
++      "reason": "No recovery reboot for donor version mismatch."
++    },
++    {
++      "file": "miui-services/smali/com/android/server/power/ShutdownThreadImpl.smali",
++      "header": ".method showShutdownAnimOrDialog(Landroid/content/Context;ZLjava/lang/String;)V",
++      "before_sha256": "3255cee614ecf749efeb231f1a5f6659d7599384eaf96e4a29fa5ab4336fc1e1",
++      "replacement": ".method showShutdownAnimOrDialog(Landroid/content/Context;ZLjava/lang/String;)V\n    .locals 0\n    # OneOS HyperOS candidate: Do not start host bootanim during guest shutdown.\n    return-void\n.end method",
++      "reason": "Do not start host bootanim during guest shutdown."
++    },
++    {
++      "file": "miui-services/smali/com/android/server/appcacheopt/AppCacheOptimizer.smali",
++      "header": ".method private connectInstalld()Z",
++      "before_sha256": "8b0f26a76fbcf2c5c0fe0d768e1c711f4491dce7955c744cbc4d12c31bcee60c",
++      "replacement": ".method private connectInstalld()Z\n    .locals 1\n    # OneOS HyperOS candidate: Do not bind Xiaomi cache optimization to Samsung installd.\n    const/4 v0, 0x0\n    return v0\n.end method",
++      "reason": "Do not bind Xiaomi cache optimization to Samsung installd."
++    },
++    {
++      "file": "miui-services/smali/com/android/server/ExtendMImpl.smali",
++      "header": ".method private connect()V",
++      "before_sha256": "a6e11e6324dcf2d19f901d0723929b8710e58fe6d017ac0ee4e90dc9ff9d94bf",
++      "replacement": ".method private connect()V\n    .locals 3\n\n    .line 1157\n    const-string/jumbo v0, \"gvld\"\n\n    invoke-static {v0}, Landroid/os/ServiceManager;->getService(Ljava/lang/String;)Landroid/os/IBinder;\n\n    move-result-object v0\n\n    iput-object v0, p0, Lcom/android/server/ExtendMImpl;->binder:Landroid/os/IBinder;\n\n    .line 1158\n    iget-object v0, p0, Lcom/android/server/ExtendMImpl;->binder:Landroid/os/IBinder;\n\n    if-eqz v0, :cond_0\n\n    iget-object v0, p0, Lcom/android/server/ExtendMImpl;->mVold:Landroid/os/IVold;\n\n    if-nez v0, :cond_0\n\n    .line 1160\n    :try_start_0\n    iget-object v0, p0, Lcom/android/server/ExtendMImpl;->binder:Landroid/os/IBinder;\n\n    iget-object v1, p0, Lcom/android/server/ExtendMImpl;->death:Landroid/os/IBinder$DeathRecipient;\n\n    const/4 v2, 0x0\n\n    invoke-interface {v0, v1, v2}, Landroid/os/IBinder;->linkToDeath(Landroid/os/IBinder$DeathRecipient;I)V\n    :try_end_0\n    .catch Landroid/os/RemoteException; {:try_start_0 .. :try_end_0} :catch_0\n\n    .line 1163\n    goto :goto_0\n\n    .line 1161\n    :catch_0\n    move-exception v0\n\n    .line 1162\n    .local v0, \"e\":Landroid/os/RemoteException;\n    const/4 v1, 0x0\n\n    iput-object v1, p0, Lcom/android/server/ExtendMImpl;->binder:Landroid/os/IBinder;\n\n    .line 1165\n    .end local v0    # \"e\":Landroid/os/RemoteException;\n    :cond_0\n    :goto_0\n    iget-object v0, p0, Lcom/android/server/ExtendMImpl;->binder:Landroid/os/IBinder;\n\n    if-eqz v0, :cond_1\n\n    iget-object v0, p0, Lcom/android/server/ExtendMImpl;->mVold:Landroid/os/IVold;\n\n    if-nez v0, :cond_1\n\n    .line 1166\n    const-string v0, \"ExtM\"\n\n    const-string/jumbo v1, \"init vold\"\n\n    invoke-static {v0, v1}, Landroid/util/Slog;->i(Ljava/lang/String;Ljava/lang/String;)I\n\n    .line 1167\n    iget-object v0, p0, Lcom/android/server/ExtendMImpl;->binder:Landroid/os/IBinder;\n\n    invoke-static {v0}, Landroid/os/IVold$Stub;->asInterface(Landroid/os/IBinder;)Landroid/os/IVold;\n\n    move-result-object v0\n\n    iput-object v0, p0, Lcom/android/server/ExtendMImpl;->mVold:Landroid/os/IVold;\n\n    .line 1169\n    :cond_1\n    return-void\n.end method",
++      "reason": "Use the isolated guest vold name."
++    },
++    {
++      "file": "miui-services/smali/com/android/server/appcacheopt/AppCacheOptimizer.smali",
++      "header": ".method private connectVold()Z",
++      "before_sha256": "55b0222fe94aa8f6535974e6f6599c72f27f17d8ccadbfe30e35153d9ef729c6",
++      "replacement": ".method private connectVold()Z\n    .locals 6\n\n    .line 307\n    iget-object v0, p0, Lcom/android/server/appcacheopt/AppCacheOptimizer;->mVold:Landroid/os/IVold;\n\n    const/4 v1, 0x1\n\n    if-eqz v0, :cond_0\n\n    .line 308\n    return v1\n\n    .line 310\n    :cond_0\n    const-string/jumbo v0, \"gvld\"\n\n    invoke-static {v0}, Landroid/os/ServiceManager;->getService(Ljava/lang/String;)Landroid/os/IBinder;\n\n    move-result-object v0\n\n    .line 311\n    .local v0, \"binder\":Landroid/os/IBinder;\n    const/4 v2, 0x0\n\n    if-eqz v0, :cond_1\n\n    .line 313\n    :try_start_0\n    new-instance v3, Lcom/android/server/appcacheopt/AppCacheOptimizer$$ExternalSyntheticLambda1;\n\n    invoke-direct {v3, p0}, Lcom/android/server/appcacheopt/AppCacheOptimizer$$ExternalSyntheticLambda1;-><init>(Lcom/android/server/appcacheopt/AppCacheOptimizer;)V\n\n    invoke-interface {v0, v3, v2}, Landroid/os/IBinder;->linkToDeath(Landroid/os/IBinder$DeathRecipient;I)V\n    :try_end_0\n    .catch Landroid/os/RemoteException; {:try_start_0 .. :try_end_0} :catch_0\n\n    .line 320\n    goto :goto_0\n\n    .line 318\n    :catch_0\n    move-exception v3\n\n    .line 319\n    .local v3, \"e\":Landroid/os/RemoteException;\n    const/4 v0, 0x0\n\n    .line 323\n    .end local v3    # \"e\":Landroid/os/RemoteException;\n    :cond_1\n    :goto_0\n    const-string v3, \"APPCacheOptimization\"\n\n    if-eqz v0, :cond_2\n\n    .line 324\n    invoke-static {v0}, Landroid/os/IVold$Stub;->asInterface(Landroid/os/IBinder;)Landroid/os/IVold;\n\n    move-result-object v2\n\n    .line 325\n    .local v2, \"vold\":Landroid/os/IVold;\n    iput-object v2, p0, Lcom/android/server/appcacheopt/AppCacheOptimizer;->mVold:Landroid/os/IVold;\n\n    .line 326\n    .end local v2    # \"vold\":Landroid/os/IVold;\n    nop\n\n    .line 332\n    const-string/jumbo v2, \"vold connect success\"\n\n    invoke-static {v3, v2}, Landroid/util/Slog;->i(Ljava/lang/String;Ljava/lang/String;)I\n\n    .line 333\n    invoke-direct {p0}, Lcom/android/server/appcacheopt/AppCacheOptimizer;->init()V\n\n    .line 334\n    return v1\n\n    .line 328\n    :cond_2\n    const-string/jumbo v1, \"vold not found; trying again\"\n\n    invoke-static {v3, v1}, Landroid/util/Slog;->w(Ljava/lang/String;Ljava/lang/String;)I\n\n    .line 329\n    invoke-static {}, Lcom/android/server/MiuiBgThread;->getHandler()Landroid/os/Handler;\n\n    move-result-object v1\n\n    new-instance v3, Lcom/android/server/appcacheopt/AppCacheOptimizer$$ExternalSyntheticLambda2;\n\n    invoke-direct {v3, p0}, Lcom/android/server/appcacheopt/AppCacheOptimizer$$ExternalSyntheticLambda2;-><init>(Lcom/android/server/appcacheopt/AppCacheOptimizer;)V\n\n    const-wide/16 v4, 0x3e8\n\n    invoke-virtual {v1, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z\n\n    .line 330\n    return v2\n.end method",
++      "reason": "Use the isolated guest vold name."
++    },
++    {
++      "file": "crashrecovery/smali/com/android/server/RescueParty.smali",
++      "header": ".method private static isDisabled()Z",
++      "before_sha256": "75c92ef08b7de8de039b8d0067f5e88a707f87c7bed9d2bdcc921a4dfc2c5117",
++      "replacement": ".method private static isDisabled()Z\n    .locals 1\n    # OneOS HyperOS candidate: RescueParty must stay disabled even if shared properties change.\n    const/4 v0, 0x1\n    return v0\n.end method",
++      "reason": "RescueParty must stay disabled even if shared properties change."
++    },
++    {
++      "file": "miui-services/smali/com/android/server/locksettings/SecSyntheticPasswordManager.smali",
++      "header": ".method public destroyLskfBasedProtectorForOldCredential(J)V",
++      "before_sha256": "f8e04724f43108ba15696f227e3db6749f8391fd9461f9aabd6e7a4c516967cf",
++      "replacement": ".method public destroyLskfBasedProtectorForOldCredential(J)V\n    # OneOS HyperOS candidate: Never delete old credentials through the shared OEM HAL.\n    .locals 0\n    return-void\n.end method",
++      "reason": "Never delete old credentials through the shared OEM HAL."
++    },
++    {
++      "file": "miui-services/smali/com/android/server/locksettings/SecSyntheticPasswordManager.smali",
++      "header": ".method public resetOldCredentialTimer()V",
++      "before_sha256": "3d44ce8dbd5d54c0a038481600b7044a2a37f727378a6294ad5fa0853abf1f04",
++      "replacement": ".method public resetOldCredentialTimer()V\n    # OneOS HyperOS candidate: No guest mutation of the old-credential HAL timer.\n    .locals 0\n    return-void\n.end method",
++      "reason": "No guest mutation of the old-credential HAL timer."
++    },
++    {
++      "file": "miui-services/smali/com/android/server/locksettings/SecSyntheticPasswordManager.smali",
++      "header": ".method public setFile(J)Z",
++      "before_sha256": "eb2cf2ef6b36b435ae1f3c950346db2813a7f8e5528344a2a372ac6a5f08bb8d",
++      "replacement": ".method public setFile(J)Z\n    # OneOS HyperOS candidate: Never write credential files through the OEM HAL.\n    .locals 1\n    const/4 v0, 0x0\n    return v0\n.end method",
++      "reason": "Never write credential files through the OEM HAL."
++    },
++    {
++      "file": "tradeinmode/smali/com/android/devicediagnostics/commands/CommandsKt.smali",
++      "header": ".method public static final doMain(Lcom/android/devicediagnostics/commands/Tokenizer;)V",
++      "before_sha256": "d442a417553e0e7420ecc0a529ccd1d66c443763a0ef9b95c4dde2869b3e63f4",
++      "replacement": ".method public static final doMain(Lcom/android/devicediagnostics/commands/Tokenizer;)V\n    # OneOS HyperOS candidate: Trade-in diagnostic reboot commands are unavailable in the guest.\n    .locals 0\n    return-void\n.end method",
++      "reason": "Trade-in diagnostic reboot commands are unavailable in the guest."
++    },
++    {
++      "file": "tradeinmode/smali/com/android/devicediagnostics/commands/CommandsKt.smali",
++      "header": ".method public static final doTesting(Lcom/android/devicediagnostics/commands/Tokenizer;)V",
++      "before_sha256": "32ba5a7cf743d4e011ca99fbc529336ad232e8921209f0421d7e6106cb0d13d9",
++      "replacement": ".method public static final doTesting(Lcom/android/devicediagnostics/commands/Tokenizer;)V\n    # OneOS HyperOS candidate: Trade-in wipe/testing commands are unavailable in the guest.\n    .locals 0\n    return-void\n.end method",
++      "reason": "Trade-in wipe/testing commands are unavailable in the guest."
++    }
++  ]
++}

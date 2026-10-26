@@ -1,0 +1,99 @@
+{
+  "files_scanned": 37045,
+  "review_required": [
+    {
+      "file": "crashrecovery/smali/com/android/server/RescueParty$1.smali",
+      "line": 67,
+      "method": ".method public run()V",
+      "target": "Landroid/os/RecoverySystem;->rebootPromptAndWipeUserData",
+      "instruction": "invoke-static {v1, v0}, Landroid/os/RecoverySystem;->rebootPromptAndWipeUserData(Landroid/content/Context;Ljava/lang/String;)V"
+    },
+    {
+      "file": "services/smali/android/hardware/weaver/IWeaver$Stub.smali",
+      "line": 322,
+      "method": ".method public onTransact(ILandroid/os/Parcel;Landroid/os/Parcel;I)Z",
+      "target": "Landroid/hardware/weaver/IWeaver$Stub;->write",
+      "instruction": "invoke-virtual {p0, v0, v2, v3}, Landroid/hardware/weaver/IWeaver$Stub;->write(I[B[B)V"
+    },
+    {
+      "file": "services/smali/android/hardware/weaver/V1_0/IWeaver$Stub.smali",
+      "line": 591,
+      "method": ".method public onTransact(ILandroid/os/HwParcel;Landroid/os/HwParcel;I)V",
+      "target": "Landroid/hardware/weaver/V1_0/IWeaver$Stub;->write",
+      "instruction": "invoke-virtual {p0, v0, v1, v3}, Landroid/hardware/weaver/V1_0/IWeaver$Stub;->write(ILjava/util/ArrayList;Ljava/util/ArrayList;)I"
+    },
+    {
+      "file": "services/smali/com/android/server/MasterClearReceiver$1.smali",
+      "line": 184,
+      "method": ".method public run()V",
+      "target": "Landroid/os/RecoverySystem;->rebootWipeUserData",
+      "instruction": "invoke-static/range {v3 .. v8}, Landroid/os/RecoverySystem;->rebootWipeUserData(Landroid/content/Context;ZLjava/lang/String;ZZZ)V"
+    },
+    {
+      "file": "services/smali_classes2/com/android/server/devicepolicy/FactoryResetter.smali",
+      "line": 331,
+      "method": ".method private factoryResetInternalUnchecked()V",
+      "target": "Landroid/os/RecoverySystem;->rebootWipeUserData",
+      "instruction": "invoke-static {v1, v2, v3, v4, v5}, Landroid/os/RecoverySystem;->rebootWipeUserData(Landroid/content/Context;ZLjava/lang/String;ZZ)V"
+    },
+    {
+      "file": "services/smali_classes2/com/android/server/locksettings/SyntheticPasswordManager.smali",
+      "line": 3614,
+      "method": ".method private weaverEnroll(Landroid/hardware/weaver/IWeaver;I[B[B)[B",
+      "target": "Landroid/hardware/weaver/IWeaver;->write",
+      "instruction": "invoke-interface {p1, p2, p3, p4}, Landroid/hardware/weaver/IWeaver;->write(I[B[B)V"
+    },
+    {
+      "file": "services/smali_classes2/com/android/server/locksettings/WeaverHidlAdapter.smali",
+      "line": 479,
+      "method": ".method public write(I[B[B)V",
+      "target": "Landroid/hardware/weaver/V1_0/IWeaver;->write",
+      "instruction": "invoke-interface {v0, p1, v1, v2}, Landroid/hardware/weaver/V1_0/IWeaver;->write(ILjava/util/ArrayList;Ljava/util/ArrayList;)I"
+    }
+  ],
+  "control_strings_review_required": [
+    {
+      "file": "services/smali/com/android/server/adb/AdbService.smali",
+      "line": 808,
+      "method": ".method private startAdbd()V",
+      "string": "ctl.start"
+    },
+    {
+      "file": "services/smali_classes2/com/android/server/os/BugreportManagerServiceImpl.smali",
+      "line": 1250,
+      "method": ".method private startAndGetDumpstateBinderServiceLocked()Landroid/os/IDumpstate;",
+      "string": "ctl.start"
+    },
+    {
+      "file": "services/smali_classes3/com/android/server/recoverysystem/RecoverySystemService.smali",
+      "line": 3246,
+      "method": ".method private setupOrClearBcb(ZLjava/lang/String;)Z",
+      "string": "ctl.start"
+    },
+    {
+      "file": "services/smali_classes3/com/android/server/recoverysystem/RecoverySystemService.smali",
+      "line": 3251,
+      "method": ".method private setupOrClearBcb(ZLjava/lang/String;)Z",
+      "string": "setup-bcb"
+    },
+    {
+      "file": "services/smali_classes3/com/android/server/recoverysystem/RecoverySystemService.smali",
+      "line": 3259,
+      "method": ".method private setupOrClearBcb(ZLjava/lang/String;)Z",
+      "string": "clear-bcb"
+    },
+    {
+      "file": "services/smali_classes3/com/android/server/recoverysystem/RecoverySystemService.smali",
+      "line": 6093,
+      "method": ".method public uncrypt(Ljava/lang/String;Landroid/os/IRecoverySystemProgressListener;)Z",
+      "string": "ctl.start"
+    },
+    {
+      "file": "services/smali_classes3/com/android/server/stab/UniStab.smali",
+      "line": 360,
+      "method": ".method public static needReboot(Ljava/lang/String;)V",
+      "string": "sys.powerctl"
+    }
+  ],
+  "scope": "Direct invokes and control-string sites; reachability, native code and reflection are not proven. Not a launch authorization."
+}

@@ -1,0 +1,28 @@
+{
+  "launch_ready": false,
+  "flashable": false,
+  "device_modified": false,
+  "stage": "offline structural validation only",
+  "inputs": {
+    "system/framework/services.jar": "c7e5901633e6dc7e21eb2b0058494e0fe584d7d0942ea00daeda299281e9ae38",
+    "system/system_ext/framework/miui-services.jar": "835056db4962a274c3567b1a329b166b47ed6ab5fd1c408b04e7b1cb5332e8b9",
+    "system/framework/tradeinmode.jar": "6ebb258ed22de9ad27f57470b351f85470bd0ae45d17369679c8119b7db023b2"
+  },
+  "crash_jar_sha256": "4533611de83fa462db64b2bacab2c0e497535f4acd96c0ba4444db0e44b1f193",
+  "host_table_sha256": "f8aa9c1c76b4efd9354a85de7c812aea3a7179f0827177348be090f94c3fbb44",
+  "files": {
+    "vold_patched": "b28497d96967fbd52e1f3236c0d7e36eedb0a28751e7948629965a2e1182c3fd",
+    "service.incremental_patched.so": "f19a1b57303e97916143e5ca5e9aaf5f30faaee4e64cc3268c63a35d532e7806",
+    "services_patched.jar": "fed0a9b9afb640b8381b0e776e4ecc0dc2fa375b37daf3259dd302e3fd58a1de",
+    "service-crashrecovery_patched.jar": "20d9d291ba02982cea02d1cff278bf406119963e8a5594c6be3140046d9cfbfc",
+    "miui-services_patched.jar": "ae5794e0f357f17326886cfebbb20f773ed058f168b1b310489bd64a40cb988d",
+    "tradeinmode_patched.jar": "dcb872a25dd6d3957f92a6109be18ef6001498581af97727ddd7f92098aa36bb",
+    "native-candidate.json": "f6d181a06c3f08a9095fc9b4454ed0f9024ea9dfa78ea1a48f4596a74b4e98cf"
+  },
+  "remaining": [
+    "HyperOS runtime/mount and OneOS packaging integration",
+    "Full native, reflection, Binder and OEM service reachability review",
+    "Privileged IMS signing/integration and carrier provisioning",
+    "Device boot, return-to-One-UI and call tests"
+  ]
+}

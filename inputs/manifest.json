@@ -1,0 +1,31 @@
+{
+  "hyperos_zip": {
+    "filename": "HyperOS-17-dada-4.0.0.6.XOCCNXM-14092026-AxisGSI.zip",
+    "sha256": "5a2f75c937d2b1cdf7513156f86a6f3bf457424df7107393eee05a93425609af",
+    "url": "https://sourceforge.net/projects/axisgsiupdates/files/hyperos/HyperOS-17-dada-4.0.0.6.XOCCNXM-14092026-AxisGSI.zip/download"
+  },
+  "system_image": {
+    "sha256": "97ab29a93a0ccb81338b5152ba6c99e19c43b5bff85b95ce2341a8f2b3ed02ae"
+  },
+  "android_platform_jar": {
+    "sha256": "f6a41ad548bb45cccd3b1d4774cb50d57826dd319b6e5accd6b6269876e12d71",
+    "url": "https://repo.maven.apache.org/maven2/org/robolectric/android-all/17-robolectric-15733970/android-all-17-robolectric-15733970.jar"
+  },
+  "crashrecovery_capex": {
+    "sha256": "c1babb552c0e161e7cbaa3b26c30e23a870f76f352a6e3c19a17f2e01a70131f"
+  },
+  "crashrecovery_jar": {
+    "sha256": "4533611de83fa462db64b2bacab2c0e497535f4acd96c0ba4444db0e44b1f193"
+  },
+  "upstream": {
+    "OneOS": {
+      "url": "https://github.com/fahadalijaved23/OneOS.git",
+      "commit": "73c3be36c35462742503380e1f025fead3cea48c"
+    },
+    "IMS": {
+      "url": "https://github.com/Samsung-Galaxy-A05/vendor_phhims.git",
+      "commit": "2bc8c93a4918f4b06c423406f27b4f3b29c44715",
+      "rnnoise_commit": "f94e734aa504e34100516c7d486cf69fc4174f00"
+    }
+  }
+}

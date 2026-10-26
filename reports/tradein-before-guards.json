@@ -1,0 +1,19 @@
+{
+  "files_scanned": 1082,
+  "review_required": [],
+  "control_strings_review_required": [
+    {
+      "file": "smali/com/android/devicediagnostics/commands/CommandsKt.smali",
+      "line": 326,
+      "method": ".method public static final doMain(Lcom/android/devicediagnostics/commands/Tokenizer;)V",
+      "string": "sys.powerctl"
+    },
+    {
+      "file": "smali/com/android/devicediagnostics/commands/CommandsKt.smali",
+      "line": 686,
+      "method": ".method public static final doTesting(Lcom/android/devicediagnostics/commands/Tokenizer;)V",
+      "string": "sys.powerctl"
+    }
+  ],
+  "scope": "Direct invokes and control-string sites; reachability, native code and reflection are not proven. Not a launch authorization."
+}

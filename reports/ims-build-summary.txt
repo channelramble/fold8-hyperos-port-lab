@@ -1,0 +1,4 @@
+Android 17 IMS platformDebug and guestDebug builds: BUILD SUCCESSFUL
+82 actionable tasks: 82 executed
+Guest APK v2 signature verified. Manifest has no sharedUserId and requests MODIFY_PHONE_STATE.
+No runtime telephony or carrier tests performed.

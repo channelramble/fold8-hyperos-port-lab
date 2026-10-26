@@ -1,0 +1,44 @@
+{
+  "ims-platform-debug": {
+    "sha256": "dadf4de3ab02646e5ec5cc7dd50f9dcd177f2446a477275566e88464a03e8b0b",
+    "bytes": 5235697,
+    "signed": "debug",
+    "runtime_verified": false
+  },
+  "ims-guest-debug": {
+    "sha256": "8b8de6c6cfc469dbd8c8c76c2e783d57da3856da09018f347debd96526d3c7f7",
+    "bytes": 5235681,
+    "signed": "debug",
+    "runtime_verified": false
+  },
+  "vold_patched": {
+    "sha256": "b28497d96967fbd52e1f3236c0d7e36eedb0a28751e7948629965a2e1182c3fd",
+    "bytes": 1192280,
+    "runtime_verified": false
+  },
+  "service.incremental_patched.so": {
+    "sha256": "f19a1b57303e97916143e5ca5e9aaf5f30faaee4e64cc3268c63a35d532e7806",
+    "bytes": 1762984,
+    "runtime_verified": false
+  },
+  "services_patched.jar": {
+    "sha256": "fed0a9b9afb640b8381b0e776e4ecc0dc2fa375b37daf3259dd302e3fd58a1de",
+    "bytes": 40043872,
+    "runtime_verified": false
+  },
+  "service-crashrecovery_patched.jar": {
+    "sha256": "20d9d291ba02982cea02d1cff278bf406119963e8a5594c6be3140046d9cfbfc",
+    "bytes": 218012,
+    "runtime_verified": false
+  },
+  "miui-services_patched.jar": {
+    "sha256": "ae5794e0f357f17326886cfebbb20f773ed058f168b1b310489bd64a40cb988d",
+    "bytes": 20504780,
+    "runtime_verified": false
+  },
+  "tradeinmode_patched.jar": {
+    "sha256": "dcb872a25dd6d3957f92a6109be18ef6001498581af97727ddd7f92098aa36bb",
+    "bytes": 747422,
+    "runtime_verified": false
+  }
+}

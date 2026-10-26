@@ -1,0 +1,8 @@
+Verified 2026-10-26:
+- prepare_upstreams.py fetched OneOS 73c3be36c35462742503380e1f025fead3cea48c.
+- OneOS.patch passed git apply --check and applied to that clean checkout.
+- It fetched IMS 2bc8c93a4918f4b06c423406f27b4f3b29c44715.
+- IMS.patch passed git apply --check and applied to that clean checkout.
+- RNNoise submodule resolved to f94e734aa504e34100516c7d486cf69fc4174f00.
+- No device command, installation or root attempt was part of that operation.
+- The OneOS regression suite passed 12 tests; repository suite passed 3 tests.

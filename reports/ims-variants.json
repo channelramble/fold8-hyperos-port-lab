@@ -1,0 +1,30 @@
+{
+  "guest": {
+    "sha256": "8b8de6c6cfc469dbd8c8c76c2e783d57da3856da09018f347debd96526d3c7f7",
+    "dex_classes": 2387,
+    "packaged_platform_classes": [],
+    "shared_system_uid": false,
+    "modify_phone_state_requested": true,
+    "native_libraries": [
+      "lib/arm64-v8a/librnnoise_jni.so",
+      "lib/armeabi-v7a/librnnoise_jni.so",
+      "lib/x86/librnnoise_jni.so",
+      "lib/x86_64/librnnoise_jni.so"
+    ],
+    "runtime_verified": false
+  },
+  "platform": {
+    "sha256": "dadf4de3ab02646e5ec5cc7dd50f9dcd177f2446a477275566e88464a03e8b0b",
+    "dex_classes": 2387,
+    "packaged_platform_classes": [],
+    "shared_system_uid": true,
+    "modify_phone_state_requested": false,
+    "native_libraries": [
+      "lib/arm64-v8a/librnnoise_jni.so",
+      "lib/armeabi-v7a/librnnoise_jni.so",
+      "lib/x86/librnnoise_jni.so",
+      "lib/x86_64/librnnoise_jni.so"
+    ],
+    "runtime_verified": false
+  }
+}

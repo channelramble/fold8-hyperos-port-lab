@@ -1,0 +1,21 @@
+{
+  "as_of": "2026-10-26",
+  "repository_prepared": true,
+  "offline_candidate_built": true,
+  "ims_platform_apk_built": true,
+  "ims_dedicated_uid_apk_built": true,
+  "install_ready": false,
+  "phone_connected_at_last_check": false,
+  "hyperos_boot_verified": false,
+  "return_to_oneui_verified_for_hyperos": false,
+  "volte_verified": false,
+  "emergency_calling_verified": false,
+  "blocking_items": [
+    "No phone connected for runtime tests",
+    "Guest mount/APEX/launcher integration not validated",
+    "Reflective OEM lock paths and Binder/native behavior require remaining review",
+    "Guest integration must mount the guarded trade-in diagnostic jar",
+    "Dedicated-UID IMS privilege/hidden-API/RIL/carrier integration unverified"
+  ],
+  "guarded_xiaomi_recovery_diagnostic_methods": 16
+}
