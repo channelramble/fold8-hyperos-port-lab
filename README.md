@@ -34,6 +34,10 @@ or carrier test. The dedicated-UID IMS variant removes the shared-system-UID
 signature conflict at packaging time; privileged permission grants, hidden APIs,
 Samsung modem integration and carrier provisioning remain unverified.
 
+**CI:** All 15 local tests passed. GitHub Actions could not start because of an
+account billing/spending restriction; zero steps ran. See
+[CI status](docs/CI_STATUS.md). This is not a remote CI pass.
+
 `status.json` is the current status. `reports/artifacts.json` identifies the local
 build products. There is no flash installer, automatic root activation or enabled
 HyperOS launcher profile in this repository. Original ROM images, proprietary

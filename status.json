@@ -17,5 +17,7 @@
     "Guest integration must mount the guarded trade-in diagnostic jar",
     "Dedicated-UID IMS privilege/hidden-API/RIL/carrier integration unverified"
   ],
-  "guarded_xiaomi_recovery_diagnostic_methods": 16
+  "guarded_xiaomi_recovery_diagnostic_methods": 16,
+  "github_actions": "blocked_before_execution_by_account_billing_or_spending_limit",
+  "local_tests_passed": 15
 }
