@@ -1,16 +1,21 @@
 # Fold8 HyperOS port lab
 
-**November 2 update: the installation kit now includes the missing root-tool
-and root-manager APKs.** Start with the complete
-[step-by-step installation guide](docs/INSTALL-GUIDE.md). It covers DFRoot 4.7,
-Samsung KernelSU 2.2, OneOS 0.4.37 Fold, HyperOS, ColorOS and Pixel, with project
-credits and source links beside each step.
+**Download the prepared [installation release](https://github.com/channelramble/fold8-hyperos-port-lab/releases/tag/install-kit-2026-11-02): DFRoot 4.7,
+Samsung KernelSU 2.2 and OneOS 0.4.37 Fold.** All three APKs are release assets;
+they are not inside GitHub's source-code ZIP. The repository remains private.
 
-Files and the guide are on the connected phone under **Download/OneOS-Install**.
-The root APKs are prepared only; neither was installed or run again. Working
-root remains a launch prerequisite. Guest boot, return and VoLTE remain
-unverified on this SM-F971U1. See [package findings](docs/UPSTREAM-SHOWCASE.md)
-and [current input manifest](inputs/upstream-install-20261102.json).
+Start with the [step-by-step installation guide](docs/INSTALL-GUIDE.md).
+[Downloads and credits](docs/DOWNLOADS.md) links every installer and the large
+HyperOS, ColorOS and Pixel images, with filenames and SHA-256 checksums.
+The guide includes setup from no root manager and source credit beside each step.
+
+The complete kit is on the phone in **My Files > Internal storage > Download >
+OneOS-Install**. DFRoot and Samsung KernelSU also have verified copies directly
+in **Download** so they are easy to find. Existing large OS images were retained.
+No APK was installed and no new root attempt was made during file preparation.
+Guest boot, return and VoLTE remain unverified on this SM-F971U1.
+See [package findings](docs/UPSTREAM-SHOWCASE.md) and the
+[current input manifest](inputs/upstream-install-20261102.json).
 
 The remainder of this README describes the **older custom AxisGSI development
 port**. Do not mix its images, patches or IMS debug APKs with the upstream kit.

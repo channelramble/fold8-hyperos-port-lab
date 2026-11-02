@@ -26,7 +26,8 @@ are installers only; no new root activation was performed.
 - `OneOS_Pixel11Fold_Full_ZFold8.img.gz`
 
 They live under `$WORKSPACE/outputs/Fold8-Install/files`. Binary files are not
-committed or redistributed through this GitHub repository.
+committed to Git. The three APKs are now available as private GitHub release
+assets; the large images remain external links. See [downloads and credits](DOWNLOADS.md).
 
 The [manifest](../inputs/upstream-install-20261102.json) records exact sizes and
 image hashes from upstream `Images.kt`. All three compressed SHA-256 hashes,

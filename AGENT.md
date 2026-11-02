@@ -1,5 +1,13 @@
 # Agent handoff
 
+November 2 file-publication update: the user explicitly requested all needed
+installers on GitHub, excluding large OS downloads. All three unchanged APKs
+are packaged as private release assets, not committed to Git. See
+docs/DOWNLOADS.md and the install-kit-2026-11-02 release. Large OS images remain
+on the phone; DFRoot and Samsung KernelSU additionally have verified copies
+directly under Download. No APK was installed or root activated for this update.
+
+
 Current direction, November 2, 2026: use the maintainer's OneOS 0.4.37 Fold APK
 and HyperOS Xiaomi18Fold image for the requested installation guide. The source is
 now https://github.com/fahadalijaved/OneOS at

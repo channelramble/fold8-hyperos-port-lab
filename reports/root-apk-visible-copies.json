@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-02",
+  "files": [
+    {
+      "filename": "DFRoot_4.7.apk",
+      "original": "/sdcard/Download/OneOS-Install/DFRoot_4.7.apk",
+      "additional_copy": "/sdcard/Download/DFRoot_4.7.apk",
+      "sha256": "9e193ffdaada8577e14a04fb19403256b3fa4991fae1331c7956e083c098a7b1",
+      "verified": true
+    },
+    {
+      "filename": "KernelSU_samsung-v2.2_32687-release.apk",
+      "original": "/sdcard/Download/OneOS-Install/KernelSU_samsung-v2.2_32687-release.apk",
+      "additional_copy": "/sdcard/Download/KernelSU_samsung-v2.2_32687-release.apk",
+      "sha256": "761dffad54ae080a4977971db7b04e2fc65c2d9b5e2336accca4a85661290a69",
+      "verified": true
+    }
+  ],
+  "apk_installation_performed": false,
+  "root_attempt_performed": false,
+  "os_images_retained": true
+}

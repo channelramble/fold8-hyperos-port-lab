@@ -1,0 +1,58 @@
+{
+  "date": "2026-11-02",
+  "destination": "/sdcard/Download/OneOS-Install",
+  "installed_or_executed": false,
+  "files": [
+    {
+      "name": "INSTALL-GUIDE.md",
+      "sha256": "c75634b05a88dbe57c11b6e3ec37ab0eb7399060ed68d1dc113470cfe217e3ca",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "START-HERE.txt",
+      "sha256": "c75634b05a88dbe57c11b6e3ec37ab0eb7399060ed68d1dc113470cfe217e3ca",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "DOWNLOADS.md",
+      "sha256": "5d01b3ae847a80ea59ad3a05f2b76255cd101f4b86b73f504bf6a8868a52c4de",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "manifest.json",
+      "sha256": "04c5dd0aee02ed36f8f28eb9fb0b515592abd49633301e583bf7e24bf058cf25",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "SHA256SUMS",
+      "sha256": "31451100c775670407aa7a45eca25f1e33a0074412f0e7d2554c49cb56fd67e2",
+      "phone_copy_verified": true
+    }
+  ],
+  "large_files_retained": [
+    {
+      "filename": "OneOS-0.4.37-fold.apk",
+      "bytes": 1512993289,
+      "retained": true,
+      "sha256_verified_previously": true
+    },
+    {
+      "filename": "OneOS_HyperOS_Xiaomi18Fold_ZFold8.img.gz",
+      "bytes": 4666011150,
+      "retained": true,
+      "sha256_verified_previously": true
+    },
+    {
+      "filename": "OneOS_ColorOS17_FindN6_ZFold8.img.gz",
+      "bytes": 5285345619,
+      "retained": true,
+      "sha256_verified_previously": true
+    },
+    {
+      "filename": "OneOS_Pixel11Fold_Full_ZFold8.img.gz",
+      "bytes": 3288346862,
+      "retained": true,
+      "sha256_verified_previously": true
+    }
+  ]
+}

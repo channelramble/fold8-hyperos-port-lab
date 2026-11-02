@@ -41,6 +41,8 @@ The exact prior root result is local testing evidence, not an upstream guarantee
 ## 2. Locate the installation files
 
 On the prepared phone, open **My Files > Internal storage > Download > OneOS-Install**.
+DFRoot and Samsung KernelSU also have verified copies directly in **Download**.
+Browse Internal storage if My Files' category view does not show an APK.
 
 | File | Purpose / original project |
 | --- | --- |
@@ -54,8 +56,12 @@ On the prepared phone, open **My Files > Internal storage > Download > OneOS-Ins
 Keep the image files compressed. OneOS extracts them. Do not use the older
 AxisGSI `dada` ZIP, our custom patch candidates or the separate PhhIms debug APKs.
 
-For a fresh download, obtain the root apps from the linked releases and the
-OneOS app/images from the [maintainer-linked folder](https://gofile.io/d/A2PSsxv8).
+For a fresh download, get all three APKs from the
+[prepared GitHub release](https://github.com/channelramble/fold8-hyperos-port-lab/releases/tag/install-kit-2026-11-02) (sign in to the account with repository access).
+Choose the named APK assets, not GitHub's automatic source-code ZIP.
+The original project links above remain available as sources. Get the large
+OS images from the [maintainer-linked folder](https://gofile.io/d/A2PSsxv8),
+choosing the exact filenames in the table. Existing images are already on the phone.
 Use the **fold** APK, not **s25** or **s26**. Versions here are deliberately
 pinned; a later release needs its own checks. `manifest.json` and `SHA256SUMS`
 accompany the prepared files.
