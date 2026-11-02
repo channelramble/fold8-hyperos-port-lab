@@ -1,3 +1,13 @@
+# Current CI result
+
+GitHub Actions passed on November 2, 2026 for showcase commit
+`409dfce7060be26faab000264302e29460630227`.
+[Run 41418365056](https://github.com/channelramble/fold8-hyperos-port-lab/actions/runs/41418365056)
+completed successfully (`offline-checks`). This validates offline repository
+checks; it does not test a phone, guest boot, rollback or VoLTE.
+
+The earlier billing-blocked run below is historical:
+
 # GitHub Actions status
 
 The initial run for commit bc926a593c582b7df1d492015b537d41491a271c did not start

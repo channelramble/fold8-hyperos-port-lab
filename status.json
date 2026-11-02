@@ -18,7 +18,7 @@
     "Dedicated-UID IMS privilege/hidden-API/RIL/carrier integration unverified"
   ],
   "guarded_xiaomi_recovery_diagnostic_methods": 16,
-  "github_actions": "blocked_before_execution_by_account_billing_or_spending_limit",
+  "github_actions": "passed_offline_checks_at_409dfce",
   "local_tests_passed": 15,
   "scope": "Original custom AxisGSI port; see upstream_showcase for current install-file preparation",
   "upstream_showcase": {
@@ -37,5 +37,6 @@
     ],
     "guide": "docs/SHOWCASE-GUIDE.txt",
     "phone_folder": "/sdcard/Download/OneOS-Showcase"
-  }
+  },
+  "github_actions_run": "https://github.com/channelramble/fold8-hyperos-port-lab/actions/runs/41418365056"
 }
