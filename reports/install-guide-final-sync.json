@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-02",
+  "destination": "/sdcard/Download/OneOS-Install",
+  "installed_or_executed": false,
+  "files": [
+    {
+      "name": "INSTALL-GUIDE.md",
+      "sha256": "a2a16e44e6da4d763cfc87760985af0e3b5dc21450527328c72b168d658d6874",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "START-HERE.txt",
+      "sha256": "a2a16e44e6da4d763cfc87760985af0e3b5dc21450527328c72b168d658d6874",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "SHA256SUMS",
+      "sha256": "1663689d1711d8b9863d3d7d9316a4f1e4f7eb725a8787f38d24806e4ce4e95f",
+      "phone_copy_verified": true
+    }
+  ]
+}

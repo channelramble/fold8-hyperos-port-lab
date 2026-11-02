@@ -35,8 +35,11 @@
       "ColorOS17 FindN6",
       "Pixel11Fold"
     ],
-    "guide": "docs/SHOWCASE-GUIDE.txt",
-    "phone_folder": "/sdcard/Download/OneOS-Showcase"
+    "guide": "docs/INSTALL-GUIDE.md",
+    "phone_folder": "/sdcard/Download/OneOS-Install",
+    "root_installers_prepared": true,
+    "root_apks_installed": false,
+    "root_activated_this_turn": false
   },
   "github_actions_run": "https://github.com/channelramble/fold8-hyperos-port-lab/actions/runs/41418365056"
 }

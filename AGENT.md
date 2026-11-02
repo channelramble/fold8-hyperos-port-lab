@@ -1,18 +1,17 @@
 # Agent handoff
 
 Current direction, November 2, 2026: use the maintainer's OneOS 0.4.37 Fold APK
-and HyperOS Xiaomi18Fold image for the requested simple showcase. The source is
+and HyperOS Xiaomi18Fold image for the requested installation guide. The source is
 now https://github.com/fahadalijaved/OneOS at
 082fe8604edc7360de7da4a1ee6016e0282091f2. The GitHub latest release endpoint still
 returned v0.4.29; main and the linked GoFile folder have 0.4.37. We checked the
 actual file and source, rather than treating that release endpoint as current.
 
-Read docs/UPSTREAM-SHOWCASE.md, docs/SHOWCASE-GUIDE.txt, status.json and
-inputs/upstream-showcase-20261102.json first. The local install files live in
-$WORKSPACE/outputs/Fold8-Showcase/files and are not in Git. The source and kit
-are separate from the older AxisGSI custom port documented below. All eight
-phone files are SHA-256 verified in /sdcard/Download/OneOS-Showcase; see
-reports/showcase-phone-transfer.json. Never apply
+Read docs/UPSTREAM-SHOWCASE.md, docs/INSTALL-GUIDE.md, status.json and
+inputs/upstream-install-20261102.json first. The local install files live in
+$WORKSPACE/outputs/Fold8-Install/files and are not in Git. The source and kit
+are separate from the older AxisGSI custom port documented below. The original eight-file transfer was verified before the current guide revision;
+see reports/showcase-phone-transfer.json and the later installation-guide reports. Never apply
 its patched jars, native binaries or debug IMS APKs to the new upstream image.
 
 The phone was connected on November 2 and matches the recorded firmware. It
@@ -23,6 +22,21 @@ Respect the earlier single-root-trial limit; preparation is not a fresh
 exploit authorization. Native calling, return and guest boot remain untested
 on this exact SM-F971U1. Use the upstream experimental Samsung IMS option only
 as a future supervised test, not a proven VoLTE fix.
+
+Latest user direction: remove all filming references from the guide, cover
+setup from no root manager installed, and credit the relevant project beside
+each step. docs/INSTALL-GUIDE.md is the canonical XDA-style post; the old
+SHOWCASE-GUIDE.txt filename is a compatibility copy with the same new content.
+The video checklist was removed from the active package and repository.
+
+DFRoot_4.7.apk and KernelSU_samsung-v2.2_32687-release.apk were rechecked against
+the pinned releases and APK v2 signatures, then copied to Download/OneOS-Install.
+The previous phone folder was renamed; the existing four large files were kept.
+The latest phone-document hashes are in reports/install-guide-final-sync.json.
+The prior eight-file transfer report records history before this guide revision.
+A full manual rooting walkthrough is documentation requested by the user;
+writing it and preparing APKs did not execute another root trial. No new root
+attempt, installation, lock removal or guest switch was performed.
 
 The following is the archived October 26 custom-port handoff:
 

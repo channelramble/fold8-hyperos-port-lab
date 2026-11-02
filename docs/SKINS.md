@@ -1,5 +1,5 @@
 November 2 update: the upstream OneOS kit now contains a HyperOS option.
-See [the current showcase guide](SHOWCASE-GUIDE.txt) and
+See [the current installation guide](INSTALL-GUIDE.md) and
 [verified package findings](UPSTREAM-SHOWCASE.md). HyperOS, ColorOS and Pixel
 images have been downloaded and verified locally. OriginOS/Flyme/MagicOS remain
 research leads. The October 25 snapshot below is historical.

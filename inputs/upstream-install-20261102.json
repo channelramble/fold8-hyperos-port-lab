@@ -1,0 +1,67 @@
+{
+  "prepared_date": "2026-11-02",
+  "upstream_commit": "082fe8604edc7360de7da4a1ee6016e0282091f2",
+  "upstream_url": "https://github.com/fahadalijaved/OneOS",
+  "download_folder": "https://gofile.io/d/A2PSsxv8",
+  "files": [
+    {
+      "name": "OneOS Fold installer",
+      "filename": "OneOS-0.4.37-fold.apk",
+      "bytes": 1512993289,
+      "publisher_md5": "748ef589a1a97ff80825538e9f4d1496",
+      "kind": "apk"
+    },
+    {
+      "name": "HyperOS",
+      "filename": "OneOS_HyperOS_Xiaomi18Fold_ZFold8.img.gz",
+      "bytes": 4666011150,
+      "sha256": "745e43c2d116c4277af06b65c5d8fbaefec11731dcc23f0c067631fce04554a3",
+      "raw_bytes": 7749939200,
+      "raw_sha256": "269309b8869d4de41c5c852d230b4b7075b8ff733d9244f4fb868ec7109baeac",
+      "kind": "image"
+    },
+    {
+      "name": "ColorOS 17",
+      "filename": "OneOS_ColorOS17_FindN6_ZFold8.img.gz",
+      "bytes": 5285345619,
+      "sha256": "4d371cbeb5da0b7c4b67ff44ce437ca56a244b0e3a93e1a696099ab6071d1809",
+      "raw_bytes": 10276003840,
+      "raw_sha256": "bdf5ef00aee3333758afdde152a29e0d2ca7bdaf89029ccd74bad34eec5bf444",
+      "kind": "image"
+    },
+    {
+      "name": "Pixel 11 Fold",
+      "filename": "OneOS_Pixel11Fold_Full_ZFold8.img.gz",
+      "bytes": 3288346862,
+      "sha256": "8fbe950c47629c439af0807fc6bbb2afa29308c65c215849bcfa7a01f6b9290d",
+      "raw_bytes": 6559223808,
+      "raw_sha256": "8b303c37916288545b3b4a317c368d89680b5c3ce09873dc764381ddd0e32830",
+      "kind": "image"
+    },
+    {
+      "name": "DFRoot temporary-root tool",
+      "filename": "DFRoot_4.7.apk",
+      "bytes": 84071,
+      "sha256": "9e193ffdaada8577e14a04fb19403256b3fa4991fae1331c7956e083c098a7b1",
+      "source": "https://github.com/diabl0w/DFRoot/releases/download/v4.7/DFRoot_4.7.apk",
+      "kind": "apk",
+      "manually_run_only": true
+    },
+    {
+      "name": "Samsung KernelSU root manager",
+      "filename": "KernelSU_samsung-v2.2_32687-release.apk",
+      "bytes": 7607475,
+      "sha256": "761dffad54ae080a4977971db7b04e2fc65c2d9b5e2336accca4a85661290a69",
+      "source": "https://github.com/diabl0w/KernelSU/releases/download/samsung-v2.2/KernelSU_samsung-v2.2_32687-release.apk",
+      "kind": "apk",
+      "manually_run_only": true
+    }
+  ],
+  "root_available": false,
+  "runtime_tested_on_this_phone": false,
+  "volte_verified": false,
+  "old_custom_port_used": false,
+  "guide": "INSTALL-GUIDE.md",
+  "phone_folder": "/sdcard/Download/OneOS-Install",
+  "root_setup_instructions_included": true
+}

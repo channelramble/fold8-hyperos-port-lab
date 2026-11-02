@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-02",
+  "device_model": "SM-F971U1",
+  "destination": "/sdcard/Download/OneOS-Install",
+  "root_apks_installed": false,
+  "root_activated": false,
+  "app_installed": false,
+  "guest_launched": false,
+  "updated_files": [
+    {
+      "name": "DFRoot_4.7.apk",
+      "sha256": "9e193ffdaada8577e14a04fb19403256b3fa4991fae1331c7956e083c098a7b1",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "KernelSU_samsung-v2.2_32687-release.apk",
+      "sha256": "761dffad54ae080a4977971db7b04e2fc65c2d9b5e2336accca4a85661290a69",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "INSTALL-GUIDE.md",
+      "sha256": "b55b5c5a9aa00bf772bf1df33be5f0a5ebf71046a231cc8a2b2812064daea555",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "START-HERE.txt",
+      "sha256": "b55b5c5a9aa00bf772bf1df33be5f0a5ebf71046a231cc8a2b2812064daea555",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "manifest.json",
+      "sha256": "791c5c01eba53e5544ba7cb0d89b4d75b419898c1d7b44f82ce249c34d853361",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "SHA256SUMS",
+      "sha256": "d9e6f1ea0c655c5465cc65ca3ac4c3ba0b92513d838d732d1c4de65dde70a043",
+      "phone_copy_verified": true
+    }
+  ],
+  "existing_large_files": "Retained by directory rename; their SHA-256 verification is recorded in phone-transfer.json."
+}

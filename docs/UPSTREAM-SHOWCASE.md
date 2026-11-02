@@ -1,9 +1,9 @@
-# Prepared upstream showcase kit — November 2, 2026
+# Prepared upstream installation kit — November 2, 2026
 
 The recommended install path is now **OneOS 0.4.37 Fold edition**, with the
 maintainer's HyperOS Xiaomi18Fold image. This is a different image from the
 older AxisGSI `dada` custom port in this repository. None of our old framework
-patches, native binaries or IMS debug APKs are included in the showcase kit.
+patches, native binaries or IMS debug APKs are included in the installation kit.
 
 The maintainer repository moved to [fahadalijaved/OneOS](https://github.com/fahadalijaved/OneOS).
 We inspected source commit `082fe8604edc7360de7da4a1ee6016e0282091f2`.
@@ -14,15 +14,21 @@ versionCode 54, versionName `0.4.37-fold`.
 
 ## Files prepared locally
 
+The kit now also includes DFRoot 4.7 and Samsung KernelSU 2.2. Their exact
+release SHA-256 values and successful APK v2 signature checks are recorded in
+[the root-installer report](../reports/root-installers-20261102.json). These
+are installers only; no new root activation was performed.
+
+
 - `OneOS-0.4.37-fold.apk`
 - `OneOS_HyperOS_Xiaomi18Fold_ZFold8.img.gz`
 - `OneOS_ColorOS17_FindN6_ZFold8.img.gz`
 - `OneOS_Pixel11Fold_Full_ZFold8.img.gz`
 
-They live under `$WORKSPACE/outputs/Fold8-Showcase/files`. Binary files are not
+They live under `$WORKSPACE/outputs/Fold8-Install/files`. Binary files are not
 committed or redistributed through this GitHub repository.
 
-The [manifest](../inputs/upstream-showcase-20261102.json) records exact sizes and
+The [manifest](../inputs/upstream-install-20261102.json) records exact sizes and
 image hashes from upstream `Images.kt`. All three compressed SHA-256 hashes,
 decompressed sizes and decompressed SHA-256 hashes were verified. Decompression
 was streamed through a hash, also checking gzip integrity. Safari automatically
@@ -57,24 +63,27 @@ flash locked=1, SELinux Enforcing and the shell UID was 2000. Working root is
 still required before a guest can run. No new root trial, APK installation,
 guest launch, lock change or carrier modification was performed.
 
-All four install files, both guides, the manifest and checksums were copied to
-`/sdcard/Download/OneOS-Showcase` and independently SHA-256 verified on the phone.
-See [the transfer report](../reports/showcase-phone-transfer.json). Boot, return,
-calls, camera and both screens remain untested on this exact device.
+The four large install files were transferred and verified as recorded in
+[the original transfer report](../reports/showcase-phone-transfer.json).
+The folder is now `/sdcard/Download/OneOS-Install`; two verified root installers
+were added, and the old guides were replaced by installation-only instructions.
+See [the update report](../reports/install-guide-phone-update.json) and
+[the final document sync](../reports/install-guide-final-sync.json).
+Boot, return, calls, camera and both screens remain untested on this exact phone.
 
-## Simple recording flow
+## Installation instructions
 
-Use [SHOWCASE-GUIDE.txt](SHOWCASE-GUIDE.txt) for the five-step phone guide and
-[VIDEO-CHECKLIST.txt](VIDEO-CHECKLIST.txt) for a short filming plan. Root and the
-upstream lock-removal prerequisite must be satisfied before switching. The
-guide leaves the lock bypass and experimental IMS option off for the first
-visual demo. HyperOS's return may reboot; temporary root may not survive.
+[INSTALL-GUIDE.md](INSTALL-GUIDE.md) starts with no root manager and includes
+manual activation, OneOS's root check, image setup, return, troubleshooting and
+removal. Every numbered stage has project/source credit. Root and the upstream
+lock-removal prerequisite must be satisfied before switching. The guide keeps
+automatic rooting, the lock bypass and experimental IMS off for initial tests.
 
 ## VoLTE
 
 Current upstream exposes **Advanced > Use One UI's calling service (VoLTE)**.
 It stages the phone's own Samsung IMS service into the guest. This is more
-relevant to the showcase package than installing our older PhhIms debug APK.
+relevant to the installation package than installing our older PhhIms debug APK.
 It remains experimental; neither source code nor a toggle proves registration,
 carrier voice support, call audio or cleanup on this phone. The
 [upstream IMS design](https://github.com/fahadalijaved/OneOS/blob/082fe8604edc7360de7da4a1ee6016e0282091f2/docs/samsung-ims-in-guest.md)

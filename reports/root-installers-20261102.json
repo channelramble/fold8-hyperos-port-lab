@@ -1,0 +1,28 @@
+{
+  "files": [
+    {
+      "name": "DFRoot temporary-root tool",
+      "filename": "DFRoot_4.7.apk",
+      "bytes": 84071,
+      "sha256": "9e193ffdaada8577e14a04fb19403256b3fa4991fae1331c7956e083c098a7b1",
+      "source": "https://github.com/diabl0w/DFRoot/releases/download/v4.7/DFRoot_4.7.apk",
+      "kind": "apk",
+      "manually_run_only": true,
+      "apk_v2_signature_verified": true,
+      "release_sha256_verified": true
+    },
+    {
+      "name": "Samsung KernelSU root manager",
+      "filename": "KernelSU_samsung-v2.2_32687-release.apk",
+      "bytes": 7607475,
+      "sha256": "761dffad54ae080a4977971db7b04e2fc65c2d9b5e2336accca4a85661290a69",
+      "source": "https://github.com/diabl0w/KernelSU/releases/download/samsung-v2.2/KernelSU_samsung-v2.2_32687-release.apk",
+      "kind": "apk",
+      "manually_run_only": true,
+      "apk_v2_signature_verified": true,
+      "release_sha256_verified": true
+    }
+  ],
+  "installed": false,
+  "root_executed_this_turn": false
+}
