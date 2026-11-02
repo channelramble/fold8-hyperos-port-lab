@@ -1,0 +1,53 @@
+{
+  "checked_date": "2026-11-02",
+  "release": "https://github.com/channelramble/fold8-hyperos-port-lab/releases/tag/install-kit-2026-11-02",
+  "release_id": 431273214,
+  "published_at": "2026-11-02T09:34:18Z",
+  "target_commitish": "474d34ed5131a759061c84f249822a4fa62cc585",
+  "repository_private": true,
+  "github_asset_sizes_and_sha256_match_local_files": true,
+  "os_images_uploaded": false,
+  "os_images_retained_on_phone": true,
+  "assets": [
+    {
+      "name": "DFRoot_4.7.apk",
+      "size": 84071,
+      "digest": "sha256:9e193ffdaada8577e14a04fb19403256b3fa4991fae1331c7956e083c098a7b1",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/channelramble/fold8-hyperos-port-lab/releases/download/install-kit-2026-11-02/DFRoot_4.7.apk"
+    },
+    {
+      "name": "INSTALL-GUIDE.md",
+      "size": 15576,
+      "digest": "sha256:c75634b05a88dbe57c11b6e3ec37ab0eb7399060ed68d1dc113470cfe217e3ca",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/channelramble/fold8-hyperos-port-lab/releases/download/install-kit-2026-11-02/INSTALL-GUIDE.md"
+    },
+    {
+      "name": "KernelSU_samsung-v2.2_32687-release.apk",
+      "size": 7607475,
+      "digest": "sha256:761dffad54ae080a4977971db7b04e2fc65c2d9b5e2336accca4a85661290a69",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/channelramble/fold8-hyperos-port-lab/releases/download/install-kit-2026-11-02/KernelSU_samsung-v2.2_32687-release.apk"
+    },
+    {
+      "name": "OneOS-0.4.37-fold.apk",
+      "size": 1512993289,
+      "digest": "sha256:bd70190031ceaf3b1108825036cf59fe594aaa5bdf3eb1efa7aa955838e2775e",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/channelramble/fold8-hyperos-port-lab/releases/download/install-kit-2026-11-02/OneOS-0.4.37-fold.apk"
+    },
+    {
+      "name": "SHA256SUMS",
+      "size": 358,
+      "digest": "sha256:f8e2e1e97519564af133d9c24af58aca2e371a50c8932e3cee3e9b8cfb07c98f",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/channelramble/fold8-hyperos-port-lab/releases/download/install-kit-2026-11-02/SHA256SUMS"
+    }
+  ],
+  "offline_ci": {
+    "commit": "474d34ed5131a759061c84f249822a4fa62cc585",
+    "conclusion": "success",
+    "url": "https://github.com/channelramble/fold8-hyperos-port-lab/actions/runs/41421670289"
+  }
+}
