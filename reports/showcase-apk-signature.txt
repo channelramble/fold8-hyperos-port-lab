@@ -1,0 +1,17 @@
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): false
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=OneOS
+Signer #1 certificate SHA-256 digest: 37560f7ba9e82a7977c239b77a47c7fa6df0f381cdad44810ffdcab12295f83a
+Signer #1 certificate SHA-1 digest: 618e2c9689c085a880055078cac71c51bc42a6a9
+Signer #1 certificate MD5 digest: 00ca6a1a92d68ce7154d1461868e07af
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 4096
+Signer #1 public key SHA-256 digest: fd31a620770fdbf4ac621bb8d46198ab5ee7a444b1423031bcc4cf5588afe5d3
+Signer #1 public key SHA-1 digest: 92742a3e18f5c3333d61b1a10001e09f649aa5c0
+Signer #1 public key MD5 digest: 940d418801429b1a55dff40a4127c22a

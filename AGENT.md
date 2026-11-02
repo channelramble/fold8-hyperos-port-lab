@@ -1,5 +1,32 @@
 # Agent handoff
 
+Current direction, November 2, 2026: use the maintainer's OneOS 0.4.37 Fold APK
+and HyperOS Xiaomi18Fold image for the requested simple showcase. The source is
+now https://github.com/fahadalijaved/OneOS at
+082fe8604edc7360de7da4a1ee6016e0282091f2. The GitHub latest release endpoint still
+returned v0.4.29; main and the linked GoFile folder have 0.4.37. We checked the
+actual file and source, rather than treating that release endpoint as current.
+
+Read docs/UPSTREAM-SHOWCASE.md, docs/SHOWCASE-GUIDE.txt, status.json and
+inputs/upstream-showcase-20261102.json first. The local install files live in
+$WORKSPACE/outputs/Fold8-Showcase/files and are not in Git. The source and kit
+are separate from the older AxisGSI custom port documented below. All eight
+phone files are SHA-256 verified in /sdcard/Download/OneOS-Showcase; see
+reports/showcase-phone-transfer.json. Never apply
+its patched jars, native binaries or debug IMS APKs to the new upstream image.
+
+The phone was connected on November 2 and matches the recorded firmware. It
+has no su command on the shell path, verified boot green and flash locked=1.
+No new root attempt, APK installation, guest launch, lock removal or carrier
+change was performed. The user asked to prepare files for them to install.
+Respect the earlier single-root-trial limit; preparation is not a fresh
+exploit authorization. Native calling, return and guest boot remain untested
+on this exact SM-F971U1. Use the upstream experimental Samsung IMS option only
+as a future supervised test, not a proven VoLTE fix.
+
+The following is the archived October 26 custom-port handoff:
+
+
 Updated 2026-10-26. Start with `README.md`, `status.json`, `docs/FINDINGS.md` and
 `docs/VALIDATION.md`. This repository records an unfinished device port with a
 prepared offline development package. Do not describe it as boot-tested or VoLTE-ready.

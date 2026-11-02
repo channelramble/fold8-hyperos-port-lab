@@ -1,0 +1,65 @@
+FOLD8 SHOWCASE — HyperOS first, then ColorOS, then Pixel
+Prepared November 2, 2026 • OneOS 0.4.37 Fold edition
+
+IMPORTANT: The files are for the current upstream OneOS package. They are NOT
+our older custom HyperOS port. Do not mix that port's ZIP, patches or IMS APKs
+with this kit. These systems have not been boot-tested on your SM-F971U1.
+
+BEFORE YOU START
+Your phone must have working root. Today's check found no su command, so
+switching is blocked until root is available. Installing OneOS does not root
+the phone or unlock its bootloader. A new root trial is not included here.
+
+Keep your backup current. Upstream requires removing the screen lock and
+biometrics before switching; do this yourself only when you are ready for the
+trial. Leave the Advanced "Risky" lock bypass OFF. Battery: at least 30%;
+phone temperature: below 42 C. Keep the heat protection enabled.
+
+1. INSTALL THE APP
+   Open My Files > Internal storage > Download > OneOS-Showcase.
+   Tap OneOS-0.4.37-fold.apk and install it. Open OneOS.
+   Once working root is available, allow OneOS in your root manager.
+
+2. SET UP HYPEROS
+   OneOS > Systems > HyperOS > I have the file.
+   Pick OneOS_HyperOS_Xiaomi18Fold_ZFold8.img.gz from that same folder.
+   Tap Set up. Keep OneOS open and the phone connected; allow about 15 minutes.
+   Let its compatibility and integrity checks finish. Stop if a check refuses.
+   Keep the .img.gz compressed: the app extracts it for you.
+
+3. SWITCH AND FILM
+   Tap Switch and read the displayed experimental-device notice.
+   Skip account sign-in and screen-lock setup inside the guest for the demo.
+   Film: home screen, quick settings, Settings, folding/unfolding, multitasking.
+   HyperOS and this ColorOS image do not include Google apps.
+
+4. COME BACK
+   Tap Back to One UI in the guest's OneOS app, or hold BOTH volume keys
+   for 3 seconds. Expect HyperOS's return to restart the phone.
+   If stuck, hold Power/Side + Volume Down until the phone restarts.
+   Confirm One UI works and ordinary calls work again. Temporary root may
+   need reactivation after a restart. Reversibility is not yet tested here.
+
+5. TRY THE OTHER TWO
+   Repeat step 2 for ColorOS 17 (Find N6), choosing
+   OneOS_ColorOS17_FindN6_ZFold8.img.gz.
+   For Pixel 11 Fold, choose OneOS_Pixel11Fold_Full_ZFold8.img.gz.
+   OneOS can retain previous systems as copies. Check free storage before
+   each setup; setting up one at a time is simplest for the first recording.
+
+CALLS / VoLTE
+Leave the experimental calling option OFF for the first visual demo.
+For a separate supervised call test after boot and return work:
+Advanced > Use One UI's calling service (VoLTE).
+This is an experiment, not a confirmed fix for your carrier. Test ordinary
+incoming/outgoing calls, two-way audio and return to stock. Do not test
+emergency numbers. A VoLTE icon or a 4G/5G data connection is not proof.
+
+WHEN FINISHED
+Return to One UI and restore your normal screen lock. If removing the guest
+systems, use Advanced > Remove OneOS data, review its deletion warning, then
+uninstall OneOS. This deletes guest apps/data; downloaded images stay behind.
+
+Source and current instructions:
+https://github.com/fahadalijaved/OneOS
+https://github.com/fahadalijaved/OneOS/blob/082fe8604edc7360de7da4a1ee6016e0282091f2/docs/samsung-ims-in-guest.md

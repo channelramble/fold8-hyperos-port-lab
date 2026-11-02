@@ -1,0 +1,11 @@
+{
+  "name": "HyperOS",
+  "filename": "OneOS_HyperOS_Xiaomi18Fold_ZFold8.img.gz",
+  "bytes": 4666011150,
+  "sha256": "745e43c2d116c4277af06b65c5d8fbaefec11731dcc23f0c067631fce04554a3",
+  "raw_bytes": 7749939200,
+  "raw_sha256": "269309b8869d4de41c5c852d230b4b7075b8ff733d9244f4fb868ec7109baeac",
+  "kind": "image",
+  "compressed_integrity_verified": true,
+  "raw_integrity_verified": true
+}

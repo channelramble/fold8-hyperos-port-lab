@@ -1,0 +1,10 @@
+November 2, 2026
+4 install files: exact size and compressed-file hashes verified.
+3 images: gzip integrity, raw size and raw SHA-256 verified.
+APK: v2 signature verifies, version 0.4.37-fold / code 54.
+188 content-addressed APK assets hash verified.
+7 package lists match upstream source entries.
+14 session files match source exactly; 2 have reviewed comment-only differences.
+8 phone files SHA-256 verified after copy.
+12 port tests + 3 repository tests passed.
+No root activation, APK installation, guest boot, return or call test performed.

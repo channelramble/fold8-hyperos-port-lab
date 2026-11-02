@@ -1,0 +1,40 @@
+YOUTUBE SHOWCASE — simple filming plan
+
+Suggested title: Trying HyperOS and ColorOS on My Galaxy Z Fold8
+
+0:00 — Hook
+Show the Fold and say: "I'm testing Xiaomi and OPPO software on this Samsung
+using an experimental OneOS guest system. Samsung's One UI stays installed."
+Use actual guest footage only after it has booted successfully.
+
+0:15 — The setup
+Show the three files in My Files and the OneOS Systems screen.
+Say: "This needs root and a backup. These are experimental ports."
+Keep account names, notifications, phone numbers and device identifiers out
+of the recording. Use an external camera for the switch/restart.
+
+0:40 — HyperOS
+Record the launch, home screen, control centre and Settings.
+Show cover screen -> unfold -> inner screen, then multitasking.
+Only call a feature working if you demonstrate it working.
+
+2:00 — ColorOS
+Record the same actions so viewers can compare both skins.
+Try the camera only as a test; support varies by device and build.
+
+3:15 — Optional Pixel comparison
+Show its launcher and quick settings using the matching Pixel 11 Fold image.
+
+4:00 — Return and results
+Show Back to One UI and the restart if one happens. Verify One UI is usable.
+Use a short on-screen checklist: boot / both screens / Wi-Fi / audio / return.
+Mark native calling "not tested" unless the separate call tests passed.
+
+Suggested description text:
+"Experimental OneOS showcase on my Galaxy Z Fold8 SM-F971U1. Root required.
+This is a guest Android environment, not a bootloader unlock or official
+Samsung/Xiaomi/OPPO update. Results apply to my device and firmware. Native
+VoLTE is unverified unless explicitly demonstrated in this video."
+
+Credit/link: https://github.com/fahadalijaved/OneOS
+Do not publish our proprietary image/APK copies as your own ROM release.

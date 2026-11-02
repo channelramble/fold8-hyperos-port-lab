@@ -1,17 +1,17 @@
 {
-  "as_of": "2026-10-26",
+  "as_of": "2026-11-02",
   "repository_prepared": true,
   "offline_candidate_built": true,
   "ims_platform_apk_built": true,
   "ims_dedicated_uid_apk_built": true,
   "install_ready": false,
-  "phone_connected_at_last_check": false,
+  "phone_connected_at_last_check": true,
   "hyperos_boot_verified": false,
   "return_to_oneui_verified_for_hyperos": false,
   "volte_verified": false,
   "emergency_calling_verified": false,
   "blocking_items": [
-    "No phone connected for runtime tests",
+    "No su command available on the connected phone; guest launch requires working root",
     "Guest mount/APEX/launcher integration not validated",
     "Reflective OEM lock paths and Binder/native behavior require remaining review",
     "Guest integration must mount the guarded trade-in diagnostic jar",
@@ -19,5 +19,23 @@
   ],
   "guarded_xiaomi_recovery_diagnostic_methods": 16,
   "github_actions": "blocked_before_execution_by_account_billing_or_spending_limit",
-  "local_tests_passed": 15
+  "local_tests_passed": 15,
+  "scope": "Original custom AxisGSI port; see upstream_showcase for current install-file preparation",
+  "upstream_showcase": {
+    "version": "0.4.37-fold",
+    "source_commit": "082fe8604edc7360de7da4a1ee6016e0282091f2",
+    "files_prepared": true,
+    "phone_transfer_verified": true,
+    "guest_launch_ready": false,
+    "root_prerequisite_met": false,
+    "runtime_tested_on_this_phone": false,
+    "volte_verified": false,
+    "images": [
+      "HyperOS Xiaomi18Fold",
+      "ColorOS17 FindN6",
+      "Pixel11Fold"
+    ],
+    "guide": "docs/SHOWCASE-GUIDE.txt",
+    "phone_folder": "/sdcard/Download/OneOS-Showcase"
+  }
 }

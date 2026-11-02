@@ -1,0 +1,37 @@
+{
+  "assets/oneos/sets/hyper-f8u.sha256": {
+    "matches_source_entries": true,
+    "entry_count": 34,
+    "different_entries": []
+  },
+  "assets/oneos/sets/infinityx.sha256": {
+    "matches_source_entries": true,
+    "entry_count": 34,
+    "different_entries": []
+  },
+  "assets/oneos/sets/n6-f8.sha256": {
+    "matches_source_entries": true,
+    "entry_count": 33,
+    "different_entries": []
+  },
+  "assets/oneos/sets/n6-f8u.sha256": {
+    "matches_source_entries": true,
+    "entry_count": 28,
+    "different_entries": []
+  },
+  "assets/oneos/sets/nothing-f8u.sha256": {
+    "matches_source_entries": true,
+    "entry_count": 47,
+    "different_entries": []
+  },
+  "assets/oneos/sets/pixel-f8.sha256": {
+    "matches_source_entries": true,
+    "entry_count": 35,
+    "different_entries": []
+  },
+  "assets/oneos/sets/pixel-f8u.sha256": {
+    "matches_source_entries": true,
+    "entry_count": 35,
+    "different_entries": []
+  }
+}

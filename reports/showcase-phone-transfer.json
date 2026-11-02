@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-02",
+  "device_model": "SM-F971U1",
+  "destination": "/sdcard/Download/OneOS-Showcase",
+  "installed": false,
+  "launched": false,
+  "files": [
+    {
+      "name": "OneOS-0.4.37-fold.apk",
+      "sha256": "bd70190031ceaf3b1108825036cf59fe594aaa5bdf3eb1efa7aa955838e2775e",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "OneOS_HyperOS_Xiaomi18Fold_ZFold8.img.gz",
+      "sha256": "745e43c2d116c4277af06b65c5d8fbaefec11731dcc23f0c067631fce04554a3",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "OneOS_ColorOS17_FindN6_ZFold8.img.gz",
+      "sha256": "4d371cbeb5da0b7c4b67ff44ce437ca56a244b0e3a93e1a696099ab6071d1809",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "OneOS_Pixel11Fold_Full_ZFold8.img.gz",
+      "sha256": "8fbe950c47629c439af0807fc6bbb2afa29308c65c215849bcfa7a01f6b9290d",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "START-HERE.txt",
+      "sha256": "713e1f0a561e4eb7e704e1e1b3bd32a05676e00b4182b1fa7a572dca3a5e52b8",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "VIDEO-CHECKLIST.txt",
+      "sha256": "7d8506a042db0001130802e5f6f0e93b2452f4f8ea8351250b65016a64d768a5",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "manifest.json",
+      "sha256": "f900f1fd224d2dbf9bee10fb729c3a4718a071aaadbd4c8cb175b60d07ede571",
+      "phone_copy_verified": true
+    },
+    {
+      "name": "SHA256SUMS",
+      "sha256": "9cf608549a2f50ba277a02653dacafbba90dc76ecdb223855bbdf26e215e9c6e",
+      "phone_copy_verified": true
+    }
+  ]
+}

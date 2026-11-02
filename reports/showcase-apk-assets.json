@@ -1,0 +1,27 @@
+{
+  "content_addressed_assets_verified": 188,
+  "session_scripts_match_source": {
+    "OneOSEdmStub.dex": true,
+    "OneOSFold8Geometry.dex": true,
+    "OneOSOverlayDimen.dex": true,
+    "bridges.sh": true,
+    "check_host_apex.sh": true,
+    "fold8_coloros.sh": true,
+    "fold8_pixel.sh": true,
+    "guest_google.sh": true,
+    "guest_prepare.sh": false,
+    "guest_props.sh": true,
+    "guest_start.sh": true,
+    "host_installd.txt": true,
+    "oneos_btaudio": true,
+    "oneos_switch.sh": false,
+    "return_to_oneui.sh": true,
+    "zygote_exec": true
+  },
+  "not_a_reproducible_build_or_runtime_test": true,
+  "reviewed_comment_only_differences": [
+    "guest_prepare.sh",
+    "oneos_switch.sh"
+  ],
+  "non_comment_lines_match_for_two_differing_scripts": true
+}

@@ -1,0 +1,11 @@
+{
+  "name": "ColorOS 17",
+  "filename": "OneOS_ColorOS17_FindN6_ZFold8.img.gz",
+  "bytes": 5285345619,
+  "sha256": "4d371cbeb5da0b7c4b67ff44ce437ca56a244b0e3a93e1a696099ab6071d1809",
+  "raw_bytes": 10276003840,
+  "raw_sha256": "bdf5ef00aee3333758afdde152a29e0d2ca7bdaf89029ccd74bad34eec5bf444",
+  "kind": "image",
+  "compressed_integrity_verified": true,
+  "raw_integrity_verified": true
+}

@@ -1,5 +1,18 @@
 # Fold8 HyperOS port lab
 
+**November 2 update: a current upstream install kit is prepared separately from
+our original custom port.** OneOS 0.4.37 now includes HyperOS (Xiaomi 18 Fold),
+ColorOS 17 and Pixel options for the Fold profile. Start with the simple
+[showcase guide](docs/SHOWCASE-GUIDE.txt) and [filming checklist](docs/VIDEO-CHECKLIST.txt).
+The connected SM-F971U1 has no `su` command available; working root is still a
+launch prerequisite. No guest was launched, and VoLTE remains unverified here.
+See [current findings](docs/UPSTREAM-SHOWCASE.md) and
+[verified input manifest](inputs/upstream-showcase-20261102.json).
+
+The remainder of this README describes the **older custom AxisGSI development
+port**. Do not mix its images, patches or IMS debug APKs with the upstream kit.
+
+
 Reproducible HyperOS 17 and IMS development work for the Samsung SM-F971U1.
 
 **The offline development package is prepared. This is not an install-ready ROM.**

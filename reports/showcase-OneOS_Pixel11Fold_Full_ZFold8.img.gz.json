@@ -1,0 +1,11 @@
+{
+  "name": "Pixel 11 Fold",
+  "filename": "OneOS_Pixel11Fold_Full_ZFold8.img.gz",
+  "bytes": 3288346862,
+  "sha256": "8fbe950c47629c439af0807fc6bbb2afa29308c65c215849bcfa7a01f6b9290d",
+  "raw_bytes": 6559223808,
+  "raw_sha256": "8b303c37916288545b3b4a317c368d89680b5c3ce09873dc764381ddd0e32830",
+  "kind": "image",
+  "compressed_integrity_verified": true,
+  "raw_integrity_verified": true
+}

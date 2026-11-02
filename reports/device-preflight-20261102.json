@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-02",
+  "model": "SM-F971U1",
+  "codename": "h8q",
+  "soc": "SM8850",
+  "android": 17,
+  "sdk": 37,
+  "build": "CP2A.260605.016.F971U1UES3AZIL",
+  "verified_boot": "green",
+  "flash_locked": true,
+  "selinux": "Enforcing",
+  "adb_shell_uid": 2000,
+  "su_on_shell_path": false,
+  "boot_completed": true,
+  "data_free_gib_approx": 79,
+  "battery_percent": 55,
+  "battery_temperature_c": 25.9,
+  "device_changes": "Install-file transfer only; no root, install, guest launch, carrier or lock changes"
+}
